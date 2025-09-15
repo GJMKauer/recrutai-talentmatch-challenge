@@ -58,7 +58,6 @@ Desenvolver um MVP de um sistema de matching entre candidatos e vagas para plata
 2. **README** incluindo:
    - Instruções de instalação e execução
    - Decisões técnicas e trade-offs
-   - Screenshots ou vídeo curto demonstrando a solução
 
 3. **Uso de IA DevTools**
    - Logs dos prompts e screenshots
