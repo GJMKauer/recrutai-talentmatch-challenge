@@ -1,0 +1,161 @@
+{
+  "id": "job-001",
+  "title": "Engenheiro(a) de Software Full Stack",
+  "company": {
+    "name": "TechBank Solutions",
+    "sector": "Fintech",
+    "size": "500-1000 funcionários",
+    "culture": "Inovadora, ágil, orientada a resultados, colaborativa"
+  },
+  "location": {
+    "city": "São Paulo",
+    "state": "SP",
+    "country": "Brasil",
+    "type": "Remoto",
+  },
+  "contract": {
+    "type": "CLT",
+    "duration": "Indeterminado",
+    "salary_range": {
+      "min": 10000,
+      "max": 15000,
+      "currency": "BRL",
+      "benefits": [
+        "Vale refeição R$ 1.200/mês",
+        "Vale transporte ou auxílio combustível",
+        "Plano de saúde premium",
+        "Plano odontológico",
+        "Gympass",
+        "Auxílio home office R$ 150/mês",
+        "Seguro de vida",
+        "PLR até 2 salários",
+        "Budget educação R$ 2.000/ano"
+      ]
+    }
+  },
+  "seniority_level": "Pleno/Senior",
+  "years_of_experience": {
+    "min": 4,
+    "max": 10,
+  },
+  "description": "Estamos buscando um(a) Engenheiro(a) Full Stack apaixonado(a) por tecnologia para se juntar ao nosso time de Produtos Digitais. Você trabalhará no desenvolvimento de nossa plataforma de banking as a service, criando soluções inovadoras que impactam milhões de usuários.",
+  "responsibilities": [
+    "Desenvolver e manter aplicações web escaláveis usando React e Node.js",
+    "Projetar e implementar APIs RESTful robustas e seguras",
+    "Colaborar com times de produto, design e DevOps em ambiente ágil",
+    "Participar de code reviews e contribuir para padrões de código",
+    "Implementar testes automatizados (unitários, integração, E2E)",
+    "Otimizar performance de aplicações frontend e backend",
+    "Participar de decisões arquiteturais e escolhas tecnológicas",
+    "Mentorar desenvolvedores juniores quando necessário",
+    "Documentar soluções técnicas e APIs",
+    "Participar de plantões de suporte em sistema de rodízio"
+  ],
+  "requirements": {
+    "mandatory": [
+      {
+        "category": "technical_skills",
+        "items": [
+          "React (Hooks, Context API, State Management)",
+          "Node.js e Express ou NestJS",
+          "TypeScript",
+          "PostgreSQL ou MySQL",
+          "Git e versionamento de código",
+          "APIs RESTful",
+          "HTML5, CSS3, JavaScript ES6+",
+          "Testes automatizados (Jest, Testing Library, ou similar)"
+        ]
+      },
+      {
+        "category": "experience",
+        "items": [
+          "Mínimo 4 anos de experiência com desenvolvimento web",
+          "Experiência com metodologias ágeis (Scrum/Kanban)",
+          "Experiência com ambiente de produção e deploy",
+          "Vivência em projetos de alta escala"
+        ]
+      },
+      {
+        "category": "soft_skills",
+        "items": [
+          "Comunicação clara e objetiva",
+          "Trabalho em equipe",
+          "Proatividade e ownership",
+          "Capacidade analítica e resolução de problemas"
+        ]
+      },
+      {
+        "category": "languages",
+        "items": [
+          {
+            "language": "Português",
+            "level": "Nativo ou Fluente"
+          },
+          {
+            "language": "Inglês",
+            "level": "Intermediário (leitura e escrita)"
+          }
+        ]
+      }
+    ],
+    "desirable": [
+      {
+        "category": "technical_skills",
+        "items": [
+          "Docker e Kubernetes",
+          "AWS, Azure ou GCP",
+          "Redis ou outras soluções de cache",
+          "MongoDB ou outros NoSQL",
+          "GraphQL",
+          "Micro-serviços",
+          "CI/CD (Jenkins, GitHub Actions, GitLab CI)",
+          "Terraform ou CloudFormation",
+          "Kafka ou RabbitMQ",
+          "Python ou Go"
+        ]
+      },
+      {
+        "category": "experience",
+        "items": [
+          "Experiência no setor financeiro ou fintech",
+          "Experiência com sistemas de pagamento",
+          "Experiência liderando projetos técnicos",
+          "Contribuições open source"
+        ]
+      },
+      {
+        "category": "certifications",
+        "items": [
+          "AWS Certified",
+          "Azure Certified",
+          "Certificações em Segurança"
+        ]
+      },
+      {
+        "category": "languages",
+        "items": [
+          {
+            "language": "Inglês",
+            "level": "Fluente ou Avançado"
+          },
+          {
+            "language": "Espanhol",
+            "level": "Qualquer nível"
+          }
+        ]
+      }
+    ]
+  },
+  "keywords": [
+    "full stack",
+    "react",
+    "node.js",
+    "typescript",
+    "fintech",
+    "api",
+    "postgresql",
+    "agile",
+    "microservices",
+    "cloud"
+  ]
+}
