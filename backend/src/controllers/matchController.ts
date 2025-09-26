@@ -1,11 +1,12 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { MatchRequestPayload } from "../models/match.js";
-
 import { ZodError } from "zod";
-
+import type { MatchRequestPayload } from "../models/match.js";
 import { createMatch, getMatchReport, listMatchSummaries } from "../services/matchService.js";
 
-export async function createMatchHandler(request: FastifyRequest<{ Body: MatchRequestPayload }>, reply: FastifyReply) {
+export const createMatchHandler = async (
+  request: FastifyRequest<{ Body: MatchRequestPayload }>,
+  reply: FastifyReply
+) => {
   try {
     const { summary } = await createMatch({
       logger: request.log,
@@ -21,9 +22,12 @@ export async function createMatchHandler(request: FastifyRequest<{ Body: MatchRe
     request.log.error({ err: error }, "Unexpected error while creating match");
     return reply.status(500).send({ message: "Unexpected error while processing match" });
   }
-}
+};
 
-export async function getMatchReportHandler(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
+export const getMatchReportHandler = async (
+  request: FastifyRequest<{ Params: { id: string } }>,
+  reply: FastifyReply
+) => {
   const match = getMatchReport(request.params.id);
 
   if (!match) {
@@ -31,9 +35,10 @@ export async function getMatchReportHandler(request: FastifyRequest<{ Params: { 
   }
 
   return reply.send(match);
-}
+};
 
-export async function listMatchesHandler(request: FastifyRequest, reply: FastifyReply) {
+export const listMatchesHandler = async (_: FastifyRequest, reply: FastifyReply) => {
   const matches = listMatchSummaries();
+
   return reply.send(matches);
-}
+};

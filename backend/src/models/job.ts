@@ -32,7 +32,7 @@ export const JobSchema = z
 export type Job = z.infer<typeof JobSchema>;
 export type RequirementItem = z.infer<typeof RequirementItemSchema>;
 
-export function extractRequirementStrings(requirement?: RequirementItem): string | null {
+export const extractRequirementStrings = (requirement?: RequirementItem): string | null => {
   if (!requirement) {
     return null;
   }
@@ -44,7 +44,7 @@ export function extractRequirementStrings(requirement?: RequirementItem): string
   return `${requirement.language} (${requirement.level})`;
 }
 
-export function extractJobKeywords(job: Job): Array<string> {
+export const extractJobKeywords = (job: Job): Array<string> => {
   const baseKeywords = new Set<string>();
 
   if (Array.isArray(job.keywords)) {

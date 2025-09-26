@@ -28,12 +28,15 @@ type MatchResultCardProps = {
   result: MatchResult;
 };
 
-export function MatchResultCard({ result }: MatchResultCardProps) {
+export function MatchResultCard(props: MatchResultCardProps) {
+  const { result } = props;
+
   const createdAtLabel = dayjs(result.createdAt).isValid() ? dayjs(result.createdAt).fromNow() : null;
 
   const getScoreColor = () => {
     if (result.overallScore >= 80) return "success";
     if (result.overallScore >= 60) return "warning";
+
     return "error";
   }
 

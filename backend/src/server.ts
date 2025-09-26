@@ -1,14 +1,14 @@
 import "dotenv/config";
 
-import Fastify from "fastify";
 import cors from "@fastify/cors";
+import Fastify from "fastify";
 
 import { registerMatchRoutes } from "./routes/matchRoutes.js";
 
 const PORT = Number(process.env.PORT ?? 3333);
 const HOST = process.env.HOST ?? "0.0.0.0";
 
-export async function buildServer() {
+export const buildServer = async () => {
   const app = Fastify({
     logger: {
       level: process.env.LOG_LEVEL ?? "info",

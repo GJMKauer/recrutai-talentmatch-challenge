@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
-import { describe, it, beforeEach, afterEach } from "node:test";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { afterEach, beforeEach, describe, it } from "node:test";
 
 import {
   clearStore,
@@ -12,7 +12,7 @@ import {
   setMatchAnalyzer,
 } from "../dist/services/matchService.js";
 
-function createSpy() {
+const createSpy = () => {
   const spy = (...args) => {
     spy.calls.push(args);
   };
@@ -22,7 +22,7 @@ function createSpy() {
   return spy;
 }
 
-function createLogger() {
+const createLogger = () => {
   const info = createSpy();
   const warn = createSpy();
   const error = createSpy();
@@ -41,13 +41,13 @@ function createLogger() {
   return base;
 }
 
-function loadResumeMarkdown(filename) {
+const loadResumeMarkdown = (filename) => {
   const baseDir = path.resolve(process.cwd(), "..", "mocks", "cvs");
   const filePath = path.join(baseDir, filename);
   return readFileSync(filePath, "utf-8");
 }
 
-function loadJobFixture() {
+const loadJobFixture = () => {
   const jobPath = path.resolve(process.cwd(), "..", "mocks", "jobs", "jobdesc_eng_fullstack.json");
   return JSON.parse(readFileSync(jobPath, "utf-8"));
 }

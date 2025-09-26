@@ -30,16 +30,16 @@ type FormErrors = {
 };
 
 const initialState = {
-  candidateId: "",
-  candidateName: "",
   jobText: "",
   resumeText: "",
 };
 
-export function MatchForm({ isSubmitting, onSubmit, presetResumes, resetKey }: MatchFormProps) {
+export function MatchForm(props: MatchFormProps) {
+  const { isSubmitting, onSubmit, presetResumes, resetKey } = props;
+
+  const [errors, setErrors] = useState<FormErrors>({});
   const [formState, setFormState] = useState(initialState);
   const [selectedPreset, setSelectedPreset] = useState<string>("");
-  const [errors, setErrors] = useState<FormErrors>({});
 
   useEffect(() => {
     setFormState(initialState);
@@ -108,10 +108,6 @@ export function MatchForm({ isSubmitting, onSubmit, presetResumes, resetKey }: M
     setErrors({});
 
     await onSubmit({
-      candidate: {
-        id: formState.candidateId.trim() || undefined,
-        name: formState.candidateName.trim() || undefined,
-      },
       job: jobPayload,
       resumeMarkdown: trimmedResume,
       source: selectedPreset ? "preset" : "manual",
@@ -129,21 +125,6 @@ export function MatchForm({ isSubmitting, onSubmit, presetResumes, resetKey }: M
             Cole os dados da vaga em JSON, o currículo em Markdown ou utilize um currículo pré-definido.
           </Typography>
         </Box>
-
-        <Stack direction={{ md: "row", xs: "column" }} spacing={2}>
-          <TextField
-            fullWidth
-            label="Nome do candidato (opcional)"
-            onChange={handleChange("candidateName")}
-            value={formState.candidateName}
-          />
-          <TextField
-            fullWidth
-            label="ID do candidato (opcional)"
-            onChange={handleChange("candidateId")}
-            value={formState.candidateId}
-          />
-        </Stack>
 
         <Stack spacing={1}>
           <Stack alignItems={{ sm: "center" }} direction={{ sm: "row", xs: "column" }} spacing={1}>
@@ -241,7 +222,7 @@ export function MatchForm({ isSubmitting, onSubmit, presetResumes, resetKey }: M
   );
 }
 
-async function readFile(file: File): Promise<string> {
+const readFile = async (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve((reader.result as string) ?? "");

@@ -20,9 +20,9 @@ const openAiModel = process.env.OPENAI_MATCH_MODEL ?? "gpt-4o-mini";
 
 const openAiClient = openAiApiKey ? new OpenAI({ apiKey: openAiApiKey }) : null;
 
-export function isOpenAIEnabled(): boolean {
+export const isOpenAIEnabled = (): boolean => {
   return Boolean(openAiClient);
-}
+};
 
 type Logger = Pick<FastifyBaseLogger, "info" | "warn" | "error">;
 
@@ -36,7 +36,7 @@ type AnalysisResult = {
   };
 };
 
-export async function analyzeMatch({
+export const analyzeMatch = async ({
   job,
   logger,
   resumeMarkdown,
@@ -44,7 +44,7 @@ export async function analyzeMatch({
   job: Job;
   logger: Logger;
   resumeMarkdown: string;
-}): Promise<AnalysisResult> {
+}): Promise<AnalysisResult> => {
   if (!openAiClient) {
     const analysis = computeFallbackAnalysis(job, resumeMarkdown);
     logger.warn({ jobId: job.id, source: "fallback" }, "OpenAI API key not provided, using heuristic analysis");
@@ -120,9 +120,9 @@ export async function analyzeMatch({
     const analysis = computeFallbackAnalysis(job, resumeMarkdown);
     return { analysis, source: "fallback" };
   }
-}
+};
 
-function computeFallbackAnalysis(job: Job, resumeMarkdown: string): MatchAnalysis {
+const computeFallbackAnalysis = (job: Job, resumeMarkdown: string): MatchAnalysis => {
   const normalizedResume = resumeMarkdown.toLowerCase();
   const keywords = extractJobKeywords(job);
   const matched = new Set<string>();
@@ -186,4 +186,4 @@ function computeFallbackAnalysis(job: Job, resumeMarkdown: string): MatchAnalysi
     strengths: Array.from(matched).slice(0, 5),
     suggestedQuestions,
   };
-}
+};

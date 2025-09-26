@@ -10,11 +10,11 @@ export interface PresetResume {
 
 let cachedResumes: Array<PresetResume> | null = null;
 
-function getResumeDirectory(): string {
+const getResumeDirectory = (): string => {
   return path.resolve(process.cwd(), "..", "mocks", "cvs");
 }
 
-async function loadResumes(): Promise<Array<PresetResume>> {
+const loadResumes = async (): Promise<Array<PresetResume>> => {
   if (cachedResumes) {
     return cachedResumes;
   }
@@ -44,12 +44,12 @@ async function loadResumes(): Promise<Array<PresetResume>> {
   return resumes;
 }
 
-export async function getPresetResumes(): Promise<Array<PresetResume>> {
+export const getPresetResumes = async (): Promise<Array<PresetResume>> => {
   const resumes = await loadResumes();
   return resumes.map((resume) => ({ ...resume }));
 }
 
-export async function getPresetResume(id: string): Promise<PresetResume | null> {
+export const getPresetResume = async (id: string): Promise<PresetResume | null> => {
   const resumes = await loadResumes();
   return resumes.find((resume) => resume.id === id) ?? null;
 }

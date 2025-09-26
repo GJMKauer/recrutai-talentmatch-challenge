@@ -39,11 +39,11 @@ export type MatchSummary = Pick<
   "id" | "candidateId" | "candidateName" | "jobId" | "overallScore" | "analysisSource" | "createdAt"
 >;
 
-export function buildMatchSummary(result: MatchResult): MatchSummary {
+export const buildMatchSummary = (result: MatchResult): MatchSummary => {
   const { analysisSource, candidateId, candidateName, createdAt, id, jobId, overallScore } = result;
   return { analysisSource, candidateId, candidateName, createdAt, id, jobId, overallScore };
 }
 
-export function parseJob(input: unknown): Job {
+export const parseJob = (input: unknown): Job => {
   return JobSchema.parse(input);
 }

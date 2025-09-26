@@ -37,25 +37,25 @@ import {
   type MatchSummary,
   type PresetResume,
 } from "../lib/api";
-
 type ViewMode = "comparison" | "individual";
-
 type MatchDetailDictionary = Record<string, MatchResult>;
 
+/** Componente principal da aplicação. */
 export function App() {
-  const [presetResumes, setPresetResumes] = useState<Array<PresetResume>>([]);
-  const [matches, setMatches] = useState<Array<MatchSummary>>([]);
-  const [matchDetails, setMatchDetails] = useState<MatchDetailDictionary>({});
   const matchDetailsRef = useRef<MatchDetailDictionary>({});
-  const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>("individual");
-  const [isSubmittingMatch, setIsSubmittingMatch] = useState(false);
-  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [infoMessage, setInfoMessage] = useState<string | null>(null);
-  const [status, setStatus] = useState<{ ai: { openaiConfigured: boolean } } | null>(null);
   const [formResetKey, setFormResetKey] = useState(0);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+  const [isSubmittingMatch, setIsSubmittingMatch] = useState(false);
+  const [matchDetails, setMatchDetails] = useState<MatchDetailDictionary>({});
+  const [matches, setMatches] = useState<Array<MatchSummary>>([]);
+  const [presetResumes, setPresetResumes] = useState<Array<PresetResume>>([]);
+  const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
+  const [status, setStatus] = useState<{ ai: { openaiConfigured: boolean } } | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("individual");
 
   const selectedMatch = selectedMatchId ? matchDetails[selectedMatchId] : undefined;
 
@@ -67,19 +67,23 @@ export function App() {
     return matches.reduce((max, summary) => Math.max(max, summary.overallScore), 0);
   }, [matches]);
 
+  /** Carrega o relatório detalhado de um match, utilizando cache se disponível. */
   const loadMatchDetail = useCallback(async (matchId: string) => {
     if (matchDetailsRef.current[matchId]) {
       return matchDetailsRef.current[matchId];
     }
 
     setIsLoadingDetails(true);
+
     try {
       const detail = await fetchMatchReport(matchId);
+
       setMatchDetails((prev) => {
         const next = { ...prev, [matchId]: detail };
         matchDetailsRef.current = next;
         return next;
       });
+
       return detail;
     } catch (error) {
       setErrorMessage((error as Error).message ?? "Não foi possível carregar o relatório.");
@@ -92,6 +96,7 @@ export function App() {
   const fetchInitialData = useCallback(async () => {
     try {
       const controller = new AbortController();
+
       const [resumes, backendStatus, summaries] = await Promise.all([
         fetchPresetResumes(controller.signal),
         fetchBackendStatus(controller.signal).catch(() => ({ ai: { openaiConfigured: false } })),
@@ -129,8 +134,9 @@ export function App() {
   }, [selectedMatchId, matchDetails, loadMatchDetail]);
 
   const handleMatchSubmit = async (payload: MatchRequest) => {
+    setIsSubmittingMatch(true);
+
     try {
-      setIsSubmittingMatch(true);
       const summary = await createMatch(payload);
       setInfoMessage("Match calculado com sucesso.");
 
@@ -152,7 +158,7 @@ export function App() {
     }
   };
 
-  async function refreshSummaries() {
+  const refreshSummaries = async () => {
     try {
       const summaries = await fetchMatchSummaries();
       setMatches(summaries);

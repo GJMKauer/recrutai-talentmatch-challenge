@@ -13,21 +13,21 @@ import { analyzeMatch } from "./openaiClient.js";
 const matchStore = new Map<string, MatchResult>();
 let analyzer = analyzeMatch;
 
-export function setMatchAnalyzer(override: typeof analyzeMatch): void {
+export const setMatchAnalyzer = (override: typeof analyzeMatch): void => {
   analyzer = override;
 }
 
-export function resetMatchAnalyzer(): void {
+export const resetMatchAnalyzer = (): void => {
   analyzer = analyzeMatch;
 }
 
-export async function createMatch({
+export const createMatch = async ({
   logger,
   payload,
 }: {
   logger: FastifyBaseLogger;
   payload: MatchRequestPayload;
-}): Promise<{ result: MatchResult; summary: MatchSummary }> {
+}): Promise<{ result: MatchResult; summary: MatchSummary }> => {
   const data = MatchRequestSchema.parse(payload);
   const job = parseJob(data.job);
   const candidateId = data.candidate?.id ?? uuid();
@@ -87,17 +87,17 @@ export async function createMatch({
   };
 }
 
-export function getMatchReport(id: string): MatchResult | null {
+export const getMatchReport = (id: string): MatchResult | null => {
   return matchStore.get(id) ?? null;
 }
 
-export function listMatchSummaries(): Array<MatchSummary> {
+export const listMatchSummaries = (): Array<MatchSummary> => {
   return Array.from(matchStore.values())
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .map(buildMatchSummary);
 }
 
-export function clearStore(): void {
+export const clearStore = (): void => {
   matchStore.clear();
 }
 
