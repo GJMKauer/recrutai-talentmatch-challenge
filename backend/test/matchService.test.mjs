@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import process from "node:process";
 import { afterEach, beforeEach, describe, it } from "node:test";
 import {
   clearStore,
@@ -29,12 +30,12 @@ const createLogger = () => {
   const error = createSpy();
 
   const base = {
-    info,
-    warn,
-    error,
     debug: createSpy(),
-    trace: createSpy(),
+    error,
     fatal: createSpy(),
+    info,
+    trace: createSpy(),
+    warn,
   };
 
   base.child = () => base;
@@ -74,8 +75,8 @@ describe("matchService", () => {
     const logger = createLogger();
 
     const { summary } = await createMatch({
-      payload: { job: jobFixture, resumeMarkdown: sampleResume },
       logger,
+      payload: { job: jobFixture, resumeMarkdown: sampleResume },
     });
 
     assert.ok(summary.id);
@@ -92,15 +93,15 @@ describe("matchService", () => {
     const logger = createLogger();
 
     const first = await createMatch({
-      payload: { job: jobFixture, resumeMarkdown: sampleResume },
       logger,
+      payload: { job: jobFixture, resumeMarkdown: sampleResume },
     });
 
     await new Promise((resolve) => setTimeout(resolve, 10));
 
     const second = await createMatch({
-      payload: { job: jobFixture, resumeMarkdown: sampleResume },
       logger,
+      payload: { job: jobFixture, resumeMarkdown: sampleResume },
     });
 
     const summaries = listMatchSummaries();
@@ -115,12 +116,12 @@ describe("matchService", () => {
 
     setMatchAnalyzer(async () => ({
       analysis: {
-        overallScore: 91,
+        gaps: ["Terraform"],
+        insights: "Excelente aderência técnica.",
         matchedSkills: ["Node.js"],
         missingSkills: ["Terraform"],
-        insights: "Excelente aderência técnica.",
+        overallScore: 91,
         strengths: ["Node.js"],
-        gaps: ["Terraform"],
         suggestedQuestions: ["Conte sobre a experiência com Terraform."],
       },
       source: "openai",
@@ -130,12 +131,12 @@ describe("matchService", () => {
     }));
 
     const { summary } = await createMatch({
+      logger,
       payload: {
+        candidate: { id: "candidate-3", name: "Ana Ferreira" },
         job: jobFixture,
         resumeMarkdown: sampleResume,
-        candidate: { id: "candidate-3", name: "Ana Ferreira" },
       },
-      logger,
     });
 
     assert.equal(summary.analysisSource, "openai");

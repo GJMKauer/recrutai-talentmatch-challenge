@@ -205,7 +205,7 @@ export function App() {
 
   const renderMainContent = () => {
     switch (true) {
-      case !initialLoadComplete:
+      case !initialLoadComplete || isSubmittingMatch:
         return (
           <Box alignItems="center" display="flex" flexGrow={1} justifyContent="center">
             <CircularProgress />
@@ -294,7 +294,6 @@ export function App() {
                 </ToggleButton>
               </ToggleButtonGroup>
             </Stack>
-
             {renderMainContent()}
           </Stack>
         </Grid>

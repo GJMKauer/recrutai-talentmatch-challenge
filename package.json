@@ -6,6 +6,7 @@
     "dev:backend": "npm run dev --workspace backend",
     "dev:frontend": "npm run dev --workspace frontend",
     "build": "npm run build --workspace backend && npm run build --workspace frontend",
+    "configure": "cd ./backend && npm install && cd ../frontend && npm install && cd .. && cp ./backend/.env.example backend/.env",
     "lint": "npm run lint --workspace backend && npm run lint --workspace frontend",
     "test": "npm run test --workspace backend"
   }

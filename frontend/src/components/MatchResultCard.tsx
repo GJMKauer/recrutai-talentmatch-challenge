@@ -108,10 +108,8 @@ export function MatchResultCard(props: MatchResultCardProps) {
                 ) : null}
                 {result.strengths.map((item) => (
                   <ListItem key={item}>
-                    <ListItemIcon>
-                      <CheckCircleIcon color="success" />
-                    </ListItemIcon>
-                    <ListItemText primary={item} sx={{ ml: -2 }} />
+                    <CheckCircleIcon color="success" sx={{ mr: 1.5 }} />
+                    <ListItemText primary={item} />
                   </ListItem>
                 ))}
               </List>
@@ -128,10 +126,8 @@ export function MatchResultCard(props: MatchResultCardProps) {
                 ) : null}
                 {result.gaps.map((item) => (
                   <ListItem key={item}>
-                    <ListItemIcon>
-                      <HighlightOffIcon color="error" />
-                    </ListItemIcon>
-                    <ListItemText primary={item} sx={{ ml: -2 }} />
+                    <HighlightOffIcon color="error" sx={{ mr: 1.5 }} />
+                    <ListItemText primary={item} />
                   </ListItem>
                 ))}
               </List>

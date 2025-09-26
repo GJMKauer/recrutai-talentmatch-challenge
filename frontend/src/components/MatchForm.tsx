@@ -136,7 +136,8 @@ export function MatchForm(props: MatchFormProps) {
       <Stack spacing={1}>
         <Stack alignItems="center" direction={{ sm: "row", xs: "column" }} spacing={1}>
           <Typography variant="subtitle1">Currículo em Markdown</Typography>
-          <Button component="label" size="small" startIcon={<CloudUploadIcon sx={{ mt: -0.1 }} />} variant="outlined">
+          <Button component="label" size="small" variant="outlined">
+            <CloudUploadIcon sx={{ mr: 1, width: "18px" }} />
             Carregar arquivo
             <input
               accept="text/markdown,text/plain,.md"
