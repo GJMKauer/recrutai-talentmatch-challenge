@@ -6,26 +6,12 @@ O projeto entrega um MVP full-stack totalmente em TypeScript dividido em dois pa
 - **Frontend (React + Vite + MUI)**: página única com descrição da vaga e currículo (upload/colagem ou seleção de presets), dashboard individual com cards de insights e modo comparativo em tabela para vários candidatos.
 - **Testes**: casos unitários em `backend/test/matchService.test.mjs` cobrem a service de matching, verificando fallback heurístico, ordenação e injeção de analisadores.
 
+
 ## Requisitos de Ambiente
 
 - Node.js ≥ 20
 - npm ≥ 10
 
-Clone o repositório e instale as dependências a partir da raiz do projeto:
-
-```bash
-cd ./backend && npm install && cd ../frontend && npm install && cd ..
-```
-
-## Variáveis de Ambiente
-
-Copie o arquivo `.env.example` para a raiz do backend do projeto:
-
-```bash
-cp backend/.env.example backend/.env
-```
-
-Configure `OPENAI_API_KEY` com uma chave válida para habilitar a análise usando o modelo informado em `OPENAI_MATCH_MODEL`. Quando ausente, o serviço passa automaticamente para o modo heurístico.
 
 ## Scripts Principais
 
@@ -36,6 +22,37 @@ Configure `OPENAI_API_KEY` com uma chave válida para habilitar a análise usand
 | `npm run build`             | Compila o backend (tsc) e gera o bundle do frontend |
 | `npm run lint`              | Lint em ambos os pacotes |
 | `npm run test`              | Executa os testes unitários do backend |
+
+
+## Como executar o projeto localmente
+
+Clone o repositório do GitHub, instale as dependências e copie o arquivo `.env.example` para a raiz do backend, rodando o comando abaixo a partir da raiz do projeto:
+
+```bash
+npm run configure
+```
+
+> Configure, no arquivo `.env`, a variável `OPENAI_API_KEY` com uma chave válida da OpenAI para habilitar a análise usando o modelo informado em `OPENAI_MATCH_MODEL`. Quando ausente, o serviço passa automaticamente para o modo heurístico.
+
+Para iniciar o servidor backend na porta 3333, execute o seguinte comando em um terminal na pasta raiz do projeto:
+
+```bash
+npm run dev:backend
+```
+
+Para iniciar o servidor frontend na porta 5173, execute o seguinte comando (em um terminal diferente do anterior) na pasta raiz do projeto:
+
+```bash
+npm run dev:frontend
+```
+
+> Agora, será possível acessar a aplicação através da URL `http://localhost:5173/` ou apenas `localhost:5173` em seu navegador de preferência.
+> Caso a aplicação não abra corretamente ou o backend não encontre as chaves de ambiente necessárias (descritas dentro do arquivo `.env`), pode ser necessário exportar as variáveis de ambiente com o comando abaixo:
+
+```bash
+export $(cat ./backend/.env | xargs)
+```
+
 
 ## Estrutura de Pastas (arquivos principais)
 
@@ -62,6 +79,7 @@ mocks/
 README.md
 ```
 
+
 ## Fluxo do Backend
 
 1. Controller valida o payload com Zod, e delega a regra de negócio e outras validações para a service.
@@ -70,12 +88,14 @@ README.md
 4. Logs registram origem (`openai` ou `fallback`) e duração.
 5. Endpoints auxiliares: `/api/match` (lista resumos), `/api/presets/resumes` (currículos mockados), `/api/presets/job` (vaga mockada), `/api/status` (exibe se OpenAI está ativo).
 
+
 ## Experiência do Frontend
 
 - Upload de arquivos `.md` (currículo) ou seleção de presets carregados.
 - Snackbar de feedback para sucesso/erro, mensagens de fallback quando a análise heurística está ativa.
 - Visualização individual com cards de score, qualidades, lacunas e perguntas sugeridas; modo comparativo mostra todos os matches em uma tabela com destaque para o melhor score.
 - Layout responsivo utilizando MUI, com acessibilidade básica (`aria-label` em textareas, botões com `aria-label`).
+
 
 ## Testes
 
@@ -85,21 +105,24 @@ npm run test
 
 Os testes trocam o analisador da service (`setMatchAnalyzer`) para simular respostas e garante ordenação/armazenamento em memória.
 
-## Próximos Passos sugeridos
+
+## Próximos passos sugeridos
 
 1. Persistência em banco (PostgreSQL) com repositórios dedicados.
 2. Autenticação e segregação por empresa/recrutador.
 3. Cache para reutilizar resultados de matches repetidos.
 4. Evoluir ferramentas de leitura para permitir imagens e/ou PDFs (extração de conteúdo textual para a leitura).
-5. Aprimoramentos e refinamentos no prompt/treinamento da IA para uma validação mais precisa.
+5. Aprimoramentos e refinamentos no prompt/treinamento da IA para uma validação mais precisa (principalmente em relação ao Score).
 
 
 ## Decisões Técnicas e trade-offs
+
 ### Frontend
 
 - **Stack:** React + Vite
 - **Por quê:** Inicialização rápida do projeto, *Developer Experience* simples e familiaridade prévia.
 - **Trade-offs:** Vite facilita a configuração inicial e HMR, mas exige alguns ajustes de build para cenários mais complexos (ex.: SSR ou integrações específicas - não é o caso desse MVP).
+
 
 ### Estilização
 
@@ -107,11 +130,13 @@ Os testes trocam o analisador da service (`setMatchAnalyzer`) para simular respo
 - **Por quê:** Legibilidade alta e amplo catálogo de componentes prontos, acelerando o MVP sem CSS extensivo.
 - **Trade-offs:** MUI entrega produtividade imediata; Tailwind daria controle granular, porém com maior custo inicial de design system.
 
+
 ### Backend
 
 - **Stack:** Node.js + Fastify
 - **Por quê:** Alinhamento com a stack utilizada pela Recrut.AI e objetivo de reciclar experiência com Node no backend. O Fastify foi escolhido em relação ao Express pelas validações nativas, performance e uma estrutura de rotas/handlers mais amigável.
 - **Trade-offs:** Sem necessidade de middlewares específicos, o Express não traria vantagens claras neste MVP.
+
 
 ### IA para Análise de Currículos
 
@@ -119,15 +144,18 @@ Os testes trocam o analisador da service (`setMatchAnalyzer`) para simular respo
 - **Por quê:** Integração simples em Node/Python, modelo robusto para análise textual e geração de saídas padronizadas.
 - **Trade-offs:** Dependência externa (custo/latência) — mitigado com fallback heurístico e contrato de resposta consistente.
 
+
 ### Ferramentas de Apoio
 - **Lovable:** Referência de estrutura de componentes, apresentação em tela e modelagem de dados amigável ao usuário.
 - **Codex (VSCode):** Geração da maior parte do código e lógica do MVP, otimizando tempo de desenvolvimento.
+
 
 ### Contribuições Manuais
 
 - Regras de **ESLint** e **Prettier** ajustadas para padronização do código.
 - Testes e correções visuais pontuais.
 - **Documentação**: melhorias no README do desafio e docstrings em funções, métodos e componentes.
+
 
 ## IA DevTools
 
@@ -139,6 +167,7 @@ O MVP foi construído adotando um **fluxo guiado por IA**, combinando geração 
 - **GitHub Copilot:** Utilizado sobretudo para autocomplete e documentação inline (docstrings, JSDoc/TS), acelerando a escrita de trechos repetitivos e pequenas otimizações.
 - **Lovable:** Serviu como guia de UI/UX: disposição de elementos, hierarquia visual e quais dados exibir. A partir dessas referências, os componentes foram implementados em React + MUI.
 
+
 ### Fluxo de trabalho adotado
 
 1. **Prompt → Codex:** escrever prompts curtos e objetivos para gerar estruturas, rotas, serviços e componentes.
@@ -147,10 +176,12 @@ O MVP foi construído adotando um **fluxo guiado por IA**, combinando geração 
 4. **UI → Lovable:** guiar layout e hierarquia; depois codificar em MUI.
 > Com isso, mantive o Codex no modo produtor de código, o GPT no modo crítico (clareza e precisão), o Copilot como acelerador e o Lovable como bússola visual.
 
+
 ### Boas práticas de prompt usadas
 - **Objetivo + formato de saída** (ex.: “gerar arquivo X com Y exports, sem comentários extras”).
 - **Critérios de aceitação** (ex.: “tipagem strict, testes mínimos, rota /api/match funcional”).
 - **Contexto do workspace** (lembrar o agente de ler os arquivos antes de propor mudanças).
+
 
 ### Reprodutibilidade & qualidade
 - **Temperatura baixa (0.2)** para manter consistência em geração de código.
@@ -159,11 +190,13 @@ O MVP foi construído adotando um **fluxo guiado por IA**, combinando geração 
 - **Formato de resposta estrito** (JSON) nos endpoints e na análise do modelo para evitar alucinações de formato.
 > Por se tratar de um MVP e cuja intenção é utilizar a AI para a análise dos currículos, o fallback heurístico não tem um tratamento tão rigoroso quanto à IA (em relação aos dados exibidos, score atribuído para o match etc).
 
+
 ### Limitações e como mitiguei
 
 - **Dependência externa (custo/latência)** → fallback local e logs para diagnóstico.
 - **Possíveis alucinações de detalhes** → prompts prescritivos, normalização de skills e validação de schema antes de aceitar a saída.
 - **UI gerada por referência** → o Lovable guia decisões, mas a implementação final foi criada pelo Codex, revisada e adaptada ao MUI conforme necessário para ajustes finos.
+
 
 ### Exemplo de uso prático (GPT, Lovable e Codex)
 
@@ -248,7 +281,7 @@ Job (JSON) é possível conferir no arquivo `jobdesc_eng_fullstack.json`.
 
 API
 
-POST /api/match -> body { job: Job, resumeMarkdown: string } -> retorna OverallScore ({overallScore: number} com ID do candidato {id: string}.
+POST /api/match -> body { job: Job, resumeMarkdown: string } -> retorna OverallScore ({overallScore: number}) com ID do candidato {id: string}.
 
 GET /api/match/report/:id-> retorna MatchResult completo.
 
@@ -295,3 +328,8 @@ Estrutura de Pastas (esperada)
 /package.json // script raiz para rodar front e back"
 ```
 ![Imagem exibindo utilização do Codex para geração dos componentes](assets/codex.png)
+
+
+## Exemplo da aplicação sendo executada localmente
+![Vídeo de demonstração da aplicação](https://github.com/GJMKauer/recrutai-talentmatch-challenge/raw/refs/heads/feat/tech-challenge/assets/demo_video.mp4)
+> Obs: é possível que, em testes com o mesmo CV, a IA atribua uma nota de score diferente para cada execução devido ao prompt não estar refinado o suficiente. No entanto, a avaliação geral se mantém muito próxima.
