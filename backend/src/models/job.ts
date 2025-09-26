@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 const RequirementItemSchema = z.union([
   z.string().min(1),
@@ -37,7 +37,7 @@ export function extractRequirementStrings(requirement?: RequirementItem): string
     return null;
   }
 
-  if (typeof requirement === 'string') {
+  if (typeof requirement === "string") {
     return requirement;
   }
 

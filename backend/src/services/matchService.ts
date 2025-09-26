@@ -1,6 +1,6 @@
-import type { FastifyBaseLogger } from 'fastify';
+import type { FastifyBaseLogger } from "fastify";
 
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from "uuid";
 
 import {
   MatchRequestSchema,
@@ -9,9 +9,9 @@ import {
   type MatchRequestPayload,
   type MatchResult,
   type MatchSummary,
-} from '../models/match.js';
+} from "../models/match.js";
 
-import { analyzeMatch } from './openaiClient.js';
+import { analyzeMatch } from "./openaiClient.js";
 
 const matchStore = new Map<string, MatchResult>();
 let analyzer = analyzeMatch;
@@ -69,7 +69,7 @@ export async function createMatch({
       candidateId,
       source: analysisResult.source,
     },
-    'Match analysis stored in memory',
+    "Match analysis stored in memory"
   );
 
   if (analysisResult.usage) {
@@ -80,7 +80,7 @@ export async function createMatch({
         candidateId,
         usage: analysisResult.usage,
       },
-      'OpenAI token usage for match analysis',
+      "OpenAI token usage for match analysis"
     );
   }
 

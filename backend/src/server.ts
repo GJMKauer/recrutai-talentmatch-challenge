@@ -1,22 +1,22 @@
-import 'dotenv/config';
+import "dotenv/config";
 
-import Fastify from 'fastify';
-import cors from '@fastify/cors';
+import Fastify from "fastify";
+import cors from "@fastify/cors";
 
-import { registerMatchRoutes } from './routes/matchRoutes.js';
+import { registerMatchRoutes } from "./routes/matchRoutes.js";
 
 const PORT = Number(process.env.PORT ?? 3333);
-const HOST = process.env.HOST ?? '0.0.0.0';
+const HOST = process.env.HOST ?? "0.0.0.0";
 
 export async function buildServer() {
   const app = Fastify({
     logger: {
-      level: process.env.LOG_LEVEL ?? 'info',
+      level: process.env.LOG_LEVEL ?? "info",
     },
   });
 
   await app.register(cors, {
-    origin: process.env.CORS_ORIGIN?.split(',').map((origin) => origin.trim()) ?? true,
+    origin: process.env.CORS_ORIGIN?.split(",").map((origin) => origin.trim()) ?? true,
   });
 
   await app.register(registerMatchRoutes);
@@ -31,7 +31,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     await app.listen({ port: PORT, host: HOST });
     app.log.info(`Server ready on http://${HOST}:${PORT}`);
   } catch (error) {
-    app.log.error({ err: error }, 'Failed to start server');
+    app.log.error({ err: error }, "Failed to start server");
     process.exit(1);
   }
 }
