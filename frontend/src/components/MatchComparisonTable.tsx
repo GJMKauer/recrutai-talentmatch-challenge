@@ -30,7 +30,7 @@ export function MatchComparisonTable(props: MatchComparisonTableProps) {
             <TableCell>ID</TableCell>
             <TableCell align="right">Score</TableCell>
             <TableCell>Origem da análise</TableCell>
-            <TableCell>Obtido</TableCell>
+            <TableCell>Gerado em</TableCell>
             <TableCell align="right">Ações</TableCell>
           </TableRow>
         </TableHead>
@@ -42,28 +42,30 @@ export function MatchComparisonTable(props: MatchComparisonTableProps) {
               </TableCell>
             </TableRow>
           ) : null}
-          {matches.map((summary) => {
-            const highlight = summary.overallScore === bestScore && bestScore > 0;
+          {matches
+            .sort((a, b) => b.overallScore - a.overallScore)
+            .map((summary) => {
+              const highlight = summary.overallScore === bestScore && bestScore > 0;
 
-            return (
-              <TableRow hover key={summary.id} selected={selectedMatchId === summary.id}>
-                <TableCell>{summary.candidateId}</TableCell>
-                <TableCell align="right">
-                  <Stack alignItems="center" direction="row" justifyContent="flex-end" spacing={1}>
-                    {highlight ? <Chip color="success" label="Top" size="small" /> : null}
-                    <Typography variant="body1">{summary.overallScore}</Typography>
-                  </Stack>
-                </TableCell>
-                <TableCell>{summary.analysisSource === "openai" ? "OpenAI" : "Heurística"}</TableCell>
-                <TableCell>{new Date(summary.createdAt).toLocaleString()}</TableCell>
-                <TableCell align="right">
-                  <Button onClick={() => onSelectMatch(summary.id)} size="small">
-                    Ver detalhes
-                  </Button>
-                </TableCell>
-              </TableRow>
-            );
-          })}
+              return (
+                <TableRow hover key={summary.id} selected={selectedMatchId === summary.id}>
+                  <TableCell>{summary.candidateId}</TableCell>
+                  <TableCell align="right">
+                    <Stack alignItems="center" direction="row" justifyContent="flex-end" spacing={1}>
+                      {highlight ? <Chip color="success" label="Top" size="small" /> : null}
+                      <Typography variant="body1">{summary.overallScore}</Typography>
+                    </Stack>
+                  </TableCell>
+                  <TableCell>{summary.analysisSource === "openai" ? "OpenAI" : "Heurística"}</TableCell>
+                  <TableCell>{new Date(summary.createdAt).toLocaleString()}</TableCell>
+                  <TableCell align="right">
+                    <Button onClick={() => onSelectMatch(summary.id)} size="small">
+                      Ver detalhes
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
         </TableBody>
       </Table>
     </Paper>

@@ -2,6 +2,8 @@ import type { FastifyBaseLogger } from "fastify";
 import OpenAI from "openai";
 import { z } from "zod";
 import { extractJobKeywords, type Job } from "../models/job.js";
+import { extractJson } from "../utils/json.js";
+import { systemPrompt } from "../utils/openAiPrompts.js";
 
 const matchAnalysisSchema = z.object({
   gaps: z.array(z.string()).default([]),
@@ -13,17 +15,21 @@ const matchAnalysisSchema = z.object({
   suggestedQuestions: z.array(z.string()).optional(),
 });
 
-const openAiSchema = {
-  gaps: "string[]",
-  insights: "string",
-  matchedSkills: "string[]",
-  missingSkills: "string[]",
-  overallScore: "number 0-100",
-  strengths: "string[]",
-  suggestedQuestions: "string[]",
+export type MatchAnalysis = z.infer<typeof matchAnalysisSchema>;
+
+type Logger = Pick<FastifyBaseLogger, "info" | "warn" | "error">;
+
+type AnalysisResult = {
+  analysis: MatchAnalysis;
+  source: "fallback" | "openai";
+  usage?: { completionTokens?: number; promptTokens?: number; totalTokens?: number };
 };
 
-export type MatchAnalysis = z.infer<typeof matchAnalysisSchema>;
+type AnalyzeMatchParams = {
+  job: Job;
+  logger: Logger;
+  resumeMarkdown: string;
+};
 
 const openAiApiKey = process.env.OPENAI_API_KEY;
 const openAiModel = process.env.OPENAI_MATCH_MODEL ?? "gpt-4o-mini";
@@ -34,23 +40,9 @@ export const isOpenAIEnabled = (): boolean => {
   return Boolean(openAiClient);
 };
 
-type Logger = Pick<FastifyBaseLogger, "info" | "warn" | "error">;
+export const analyzeMatch = async (params: AnalyzeMatchParams): Promise<AnalysisResult> => {
+  const { job, logger, resumeMarkdown } = params;
 
-type AnalysisResult = {
-  analysis: MatchAnalysis;
-  source: "fallback" | "openai";
-  usage?: { completionTokens?: number; promptTokens?: number; totalTokens?: number };
-};
-
-export const analyzeMatch = async ({
-  job,
-  logger,
-  resumeMarkdown,
-}: {
-  job: Job;
-  logger: Logger;
-  resumeMarkdown: string;
-}): Promise<AnalysisResult> => {
   if (!openAiClient) {
     const analysis = computeFallbackAnalysis(job, resumeMarkdown);
     logger.warn({ jobId: job.id, source: "fallback" }, "OpenAI API key not provided, using heuristic analysis");
@@ -65,11 +57,7 @@ export const analyzeMatch = async ({
         {
           content: [
             {
-              text: [
-                "Você é um avaliador de vagas.",
-                "Compare o currículo com a vaga e responda exclusivamente com JSON seguindo o formato:",
-                JSON.stringify(openAiSchema, null, 2),
-              ].join("\n"),
+              text: systemPrompt,
               type: "input_text",
             },
           ],
@@ -92,12 +80,10 @@ export const analyzeMatch = async ({
 
     const durationMs = Date.now() - startedAt;
     const rawText = response.output_text?.trim();
+    if (!rawText) throw new Error("Empty response from OpenAI");
 
-    if (!rawText) {
-      throw new Error("Empty response from OpenAI");
-    }
-
-    const parsed = matchAnalysisSchema.parse(JSON.parse(rawText));
+    const jsonText = extractJson(rawText);
+    const parsed = matchAnalysisSchema.parse(JSON.parse(jsonText));
 
     logger.info(
       {

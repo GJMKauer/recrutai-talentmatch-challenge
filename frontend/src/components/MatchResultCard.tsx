@@ -89,7 +89,7 @@ export function MatchResultCard(props: MatchResultCardProps) {
           </Box>
 
           <Grid container spacing={3}>
-            <Grid item md={6} xs={12}>
+            <Grid item md={5} xs={12}>
               <Typography gutterBottom variant="subtitle1">
                 Forças
               </Typography>
@@ -104,7 +104,7 @@ export function MatchResultCard(props: MatchResultCardProps) {
                     <ListItemIcon>
                       <CheckCircleIcon color="success" />
                     </ListItemIcon>
-                    <ListItemText primary={item} />
+                    <ListItemText primary={item} sx={{ ml: -2 }} />
                   </ListItem>
                 ))}
               </List>
@@ -124,7 +124,7 @@ export function MatchResultCard(props: MatchResultCardProps) {
                     <ListItemIcon>
                       <HighlightOffIcon color="error" />
                     </ListItemIcon>
-                    <ListItemText primary={item} />
+                    <ListItemText primary={item} sx={{ ml: -2 }} />
                   </ListItem>
                 ))}
               </List>
@@ -134,7 +134,7 @@ export function MatchResultCard(props: MatchResultCardProps) {
           <Divider />
 
           <Grid container spacing={3}>
-            <Grid item md={6} xs={12}>
+            <Grid item md={5} xs={12}>
               <Typography gutterBottom variant="subtitle1">
                 Skills aderentes
               </Typography>
@@ -151,9 +151,18 @@ export function MatchResultCard(props: MatchResultCardProps) {
               </Typography>
               <Stack direction="row" flexWrap="wrap" gap={1}>
                 {result.missingSkills.length === 0 ? <Chip label="Nenhuma lacuna" variant="outlined" /> : null}
-                {result.missingSkills.map((skill) => (
-                  <Chip color="warning" key={skill} label={skill} variant="outlined" />
-                ))}
+                {result.missingSkills.map((skill, index, array) => {
+                  if (index <= 10) {
+                    return <Chip color="warning" key={skill} label={skill} variant="outlined" />;
+                  }
+                  if (index === 11) {
+                    return (
+                      <Chip color="warning" key={skill} label={`E outras ${array.length - 11}`} variant="outlined" />
+                    );
+                  }
+
+                  return null;
+                })}
               </Stack>
             </Grid>
           </Grid>

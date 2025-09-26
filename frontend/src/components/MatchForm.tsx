@@ -36,9 +36,9 @@ type FormErrors = {
 export function MatchForm(props: MatchFormProps) {
   const { isSubmitting, job, onSubmit, presetResumes, resetKey } = props;
 
+  const [errors, setErrors] = useState<FormErrors>({});
   const [resumeText, setResumeText] = useState("");
   const [selectedPreset, setSelectedPreset] = useState<string>("");
-  const [errors, setErrors] = useState<FormErrors>({});
 
   useEffect(() => {
     setResumeText("");
@@ -110,7 +110,7 @@ export function MatchForm(props: MatchFormProps) {
           Analisar Vaga e Currículo
         </Typography>
         <Typography color="text.secondary" variant="body2">
-          Visualize a vaga selecionada e forneça o currículo em Markdown para calcular o match.
+          Visualize a vaga selecionada abaixo e forneça o currículo em Markdown (texto) para calcular o match.
         </Typography>
       </Box>
 
@@ -124,9 +124,9 @@ export function MatchForm(props: MatchFormProps) {
       </Stack>
 
       <Stack spacing={1}>
-        <Stack alignItems={{ sm: "center" }} direction={{ sm: "row", xs: "column" }} spacing={1}>
+        <Stack alignItems="center" direction={{ sm: "row", xs: "column" }} spacing={1}>
           <Typography variant="subtitle1">Currículo em Markdown</Typography>
-          <Button component="label" size="small" startIcon={<CloudUploadIcon />} variant="outlined">
+          <Button component="label" size="small" startIcon={<CloudUploadIcon sx={{ mt: -0.1 }} />} variant="outlined">
             Carregar arquivo
             <input
               accept="text/markdown,text/plain,.md"
