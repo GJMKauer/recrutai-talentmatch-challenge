@@ -1,5 +1,3 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import {
   Box,
@@ -14,8 +12,9 @@ import {
   Typography,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
-
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import type { MatchRequest, PresetResume } from "../lib/api";
+import { readFile } from "../utils/fileReader";
 
 type MatchFormProps = {
   isSubmitting: boolean;
@@ -51,11 +50,6 @@ export function MatchForm(props: MatchFormProps) {
     (field: keyof typeof initialState) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setFormState((prev) => ({ ...prev, [field]: event.target.value }));
     };
-
-  const loadJobFromFile = async (file: File) => {
-    const content = await readFile(file);
-    setFormState((prev) => ({ ...prev, jobText: content }));
-  };
 
   const loadResumeFromFile = async (file: File) => {
     const content = await readFile(file);
@@ -122,28 +116,13 @@ export function MatchForm(props: MatchFormProps) {
             Analisar Vaga e Currículo
           </Typography>
           <Typography color="text.secondary" variant="body2">
-            Cole os dados da vaga em JSON, o currículo em Markdown ou utilize um currículo pré-definido.
+            Selecione uma das vagas abaixo, o currículo em Markdown ou utilize um currículo pré-definido.
           </Typography>
         </Box>
 
         <Stack spacing={1}>
           <Stack alignItems={{ sm: "center" }} direction={{ sm: "row", xs: "column" }} spacing={1}>
-            <Typography variant="subtitle1">JSON da vaga</Typography>
-            <Button component="label" size="small" startIcon={<CloudUploadIcon />} variant="outlined">
-              Carregar arquivo
-              <input
-                accept="application/json"
-                hidden
-                onChange={async (event) => {
-                  const file = event.target.files?.[0];
-                  if (file) {
-                    await loadJobFromFile(file);
-                    event.target.value = "";
-                  }
-                }}
-                type="file"
-              />
-            </Button>
+            <Typography variant="subtitle1">Dados da vaga</Typography>
           </Stack>
           <TextField
             aria-label="Vaga em JSON"
@@ -220,13 +199,4 @@ export function MatchForm(props: MatchFormProps) {
       </Stack>
     </Paper>
   );
-}
-
-const readFile = async (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve((reader.result as string) ?? "");
-    reader.onerror = () => reject(reader.error);
-    reader.readAsText(file, "utf-8");
-  });
 }

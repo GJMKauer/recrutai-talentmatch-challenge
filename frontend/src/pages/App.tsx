@@ -37,6 +37,7 @@ import {
   type MatchSummary,
   type PresetResume,
 } from "../lib/api";
+
 type ViewMode = "comparison" | "individual";
 type MatchDetailDictionary = Record<string, MatchResult>;
 

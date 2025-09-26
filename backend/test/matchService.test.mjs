@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { afterEach, beforeEach, describe, it } from "node:test";
-
 import {
   clearStore,
   createMatch,
@@ -20,7 +19,7 @@ const createSpy = () => {
   spy.calls = [];
 
   return spy;
-}
+};
 
 const createLogger = () => {
   const info = createSpy();
@@ -39,18 +38,18 @@ const createLogger = () => {
   base.child = () => base;
 
   return base;
-}
+};
 
 const loadResumeMarkdown = (filename) => {
   const baseDir = path.resolve(process.cwd(), "..", "mocks", "cvs");
   const filePath = path.join(baseDir, filename);
   return readFileSync(filePath, "utf-8");
-}
+};
 
 const loadJobFixture = () => {
   const jobPath = path.resolve(process.cwd(), "..", "mocks", "jobs", "jobdesc_eng_fullstack.json");
   return JSON.parse(readFileSync(jobPath, "utf-8"));
-}
+};
 
 const jobFixture = loadJobFixture();
 const sampleResume = loadResumeMarkdown("candidate_cv_joao_santos.md");

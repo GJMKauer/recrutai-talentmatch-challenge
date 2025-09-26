@@ -1,8 +1,6 @@
-import "dotenv/config";
-
 import cors from "@fastify/cors";
+import "dotenv/config";
 import Fastify from "fastify";
-
 import { registerMatchRoutes } from "./routes/matchRoutes.js";
 
 const PORT = Number(process.env.PORT ?? 3333);

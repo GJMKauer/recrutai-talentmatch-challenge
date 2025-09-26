@@ -1,5 +1,4 @@
 import { z } from "zod";
-
 import { JobSchema, type Job } from "./job.js";
 
 export const MatchRequestSchema = z.object({

@@ -19,7 +19,6 @@ import {
 import Grid from "@mui/material/GridLegacy";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-
 import type { MatchResult } from "../lib/api";
 
 dayjs.extend(relativeTime);
@@ -38,7 +37,7 @@ export function MatchResultCard(props: MatchResultCardProps) {
     if (result.overallScore >= 60) return "warning";
 
     return "error";
-  }
+  };
 
   const scoreColor = getScoreColor();
 
