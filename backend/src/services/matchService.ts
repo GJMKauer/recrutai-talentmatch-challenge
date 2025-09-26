@@ -22,12 +22,12 @@ export function resetMatchAnalyzer(): void {
 }
 
 export async function createMatch({
-  payload,
   logger,
+  payload,
 }: {
-  payload: MatchRequestPayload;
   logger: FastifyBaseLogger;
-}): Promise<{ summary: MatchSummary; result: MatchResult }> {
+  payload: MatchRequestPayload;
+}): Promise<{ result: MatchResult; summary: MatchSummary }> {
   const data = MatchRequestSchema.parse(payload);
   const job = parseJob(data.job);
   const candidateId = data.candidate?.id ?? uuid();
@@ -35,35 +35,35 @@ export async function createMatch({
 
   const analysisResult = await analyzer({
     job,
-    resumeMarkdown: data.resumeMarkdown,
     logger,
+    resumeMarkdown: data.resumeMarkdown,
   });
 
   const result: MatchResult = {
-    id: matchId,
+    analysisSource: analysisResult.source,
     candidateId,
     candidateName: data.candidate?.name,
+    createdAt: new Date().toISOString(),
+    gaps: analysisResult.analysis.gaps,
+    id: matchId,
+    insights: analysisResult.analysis.insights,
+    job,
     jobId: job.id,
-    overallScore: Math.round(analysisResult.analysis.overallScore),
     matchedSkills: analysisResult.analysis.matchedSkills,
     missingSkills: analysisResult.analysis.missingSkills,
-    insights: analysisResult.analysis.insights,
-    suggestedQuestions: analysisResult.analysis.suggestedQuestions,
-    strengths: analysisResult.analysis.strengths,
-    gaps: analysisResult.analysis.gaps,
-    analysisSource: analysisResult.source,
-    job,
+    overallScore: Math.round(analysisResult.analysis.overallScore),
     resumeMarkdown: data.resumeMarkdown,
-    createdAt: new Date().toISOString(),
+    strengths: analysisResult.analysis.strengths,
+    suggestedQuestions: analysisResult.analysis.suggestedQuestions,
   };
 
   matchStore.set(result.id, result);
 
   logger.info(
     {
-      matchId: result.id,
-      jobId: job.id,
       candidateId,
+      jobId: job.id,
+      matchId: result.id,
       source: analysisResult.source,
     },
     "Match analysis stored in memory"
@@ -72,9 +72,9 @@ export async function createMatch({
   if (analysisResult.usage) {
     logger.info(
       {
-        matchId: result.id,
-        jobId: job.id,
         candidateId,
+        jobId: job.id,
+        matchId: result.id,
         usage: analysisResult.usage,
       },
       "OpenAI token usage for match analysis"
@@ -82,8 +82,8 @@ export async function createMatch({
   }
 
   return {
-    summary: buildMatchSummary(result),
     result,
+    summary: buildMatchSummary(result),
   };
 }
 
@@ -91,7 +91,7 @@ export function getMatchReport(id: string): MatchResult | null {
   return matchStore.get(id) ?? null;
 }
 
-export function listMatchSummaries(): MatchSummary[] {
+export function listMatchSummaries(): Array<MatchSummary> {
   return Array.from(matchStore.values())
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .map(buildMatchSummary);

@@ -15,17 +15,17 @@ const RequirementGroupSchema = z.object({
 
 export const JobSchema = z
   .object({
-    id: z.string().min(1),
-    title: z.string().min(1),
     description: z.string().optional(),
-    responsibilities: z.array(z.string()).optional(),
+    id: z.string().min(1),
+    keywords: z.array(z.string()).optional(),
     requirements: z
       .object({
-        mandatory: z.array(RequirementGroupSchema).optional(),
         desirable: z.array(RequirementGroupSchema).optional(),
+        mandatory: z.array(RequirementGroupSchema).optional(),
       })
       .optional(),
-    keywords: z.array(z.string()).optional(),
+    responsibilities: z.array(z.string()).optional(),
+    title: z.string().min(1),
   })
   .passthrough();
 
@@ -44,14 +44,14 @@ export function extractRequirementStrings(requirement?: RequirementItem): string
   return `${requirement.language} (${requirement.level})`;
 }
 
-export function extractJobKeywords(job: Job): string[] {
+export function extractJobKeywords(job: Job): Array<string> {
   const baseKeywords = new Set<string>();
 
   if (Array.isArray(job.keywords)) {
     job.keywords.forEach((keyword) => baseKeywords.add(keyword.toLowerCase()));
   }
 
-  const addFromRequirements = (groups?: { category: string; items: RequirementItem[] }[]) => {
+  const addFromRequirements = (groups?: Array<{ category: string; items: Array<RequirementItem> }>) => {
     groups?.forEach((group) => {
       group.items.forEach((item) => {
         const asString = extractRequirementStrings(item);

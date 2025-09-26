@@ -28,7 +28,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const app = await buildServer();
 
   try {
-    await app.listen({ port: PORT, host: HOST });
+    await app.listen({ host: HOST, port: PORT });
     app.log.info(`Server ready on http://${HOST}:${PORT}`);
   } catch (error) {
     app.log.error({ err: error }, "Failed to start server");

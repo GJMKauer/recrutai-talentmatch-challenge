@@ -8,14 +8,14 @@ import { createMatch, getMatchReport, listMatchSummaries } from "../services/mat
 export async function createMatchHandler(request: FastifyRequest<{ Body: MatchRequestPayload }>, reply: FastifyReply) {
   try {
     const { summary } = await createMatch({
-      payload: request.body,
       logger: request.log,
+      payload: request.body,
     });
 
     return reply.status(201).send(summary);
   } catch (error) {
     if (error instanceof ZodError) {
-      return reply.status(400).send({ message: "Invalid request payload", issues: error.issues });
+      return reply.status(400).send({ issues: error.issues, message: "Invalid request payload" });
     }
 
     request.log.error({ err: error }, "Unexpected error while creating match");

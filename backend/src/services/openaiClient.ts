@@ -1,25 +1,21 @@
 import type { FastifyBaseLogger } from "fastify";
-
 import OpenAI from "openai";
 import { z } from "zod";
-
 import { extractJobKeywords, type Job } from "../models/job.js";
 
 const matchAnalysisSchema = z.object({
-  overallScore: z.number().min(0).max(100),
+  gaps: z.array(z.string()).default([]),
+  insights: z.string().default(""),
   matchedSkills: z.array(z.string()).default([]),
   missingSkills: z.array(z.string()).default([]),
-  insights: z.string().default(""),
+  overallScore: z.number().min(0).max(100),
   strengths: z.array(z.string()).default([]),
-  gaps: z.array(z.string()).default([]),
   suggestedQuestions: z.array(z.string()).optional(),
 });
 
 export type MatchAnalysis = z.infer<typeof matchAnalysisSchema>;
 
 const openAiApiKey = process.env.OPENAI_API_KEY;
-console.log("Using OpenAI API Key:", openAiApiKey ? "Provided" : "Not Provided");
-console.log("Key:", openAiApiKey);
 const openAiModel = process.env.OPENAI_MATCH_MODEL ?? "gpt-4o-mini";
 
 const openAiClient = openAiApiKey ? new OpenAI({ apiKey: openAiApiKey }) : null;
@@ -32,55 +28,55 @@ type Logger = Pick<FastifyBaseLogger, "info" | "warn" | "error">;
 
 type AnalysisResult = {
   analysis: MatchAnalysis;
-  source: "openai" | "fallback";
+  source: "fallback" | "openai";
   usage?: {
-    promptTokens?: number;
     completionTokens?: number;
+    promptTokens?: number;
     totalTokens?: number;
   };
 };
 
 export async function analyzeMatch({
   job,
-  resumeMarkdown,
   logger,
+  resumeMarkdown,
 }: {
   job: Job;
-  resumeMarkdown: string;
   logger: Logger;
+  resumeMarkdown: string;
 }): Promise<AnalysisResult> {
   if (!openAiClient) {
     const analysis = computeFallbackAnalysis(job, resumeMarkdown);
-    logger.warn({ source: "fallback", jobId: job.id }, "OpenAI API key not provided, using heuristic analysis");
+    logger.warn({ jobId: job.id, source: "fallback" }, "OpenAI API key not provided, using heuristic analysis");
     return { analysis, source: "fallback" };
   }
 
   const startedAt = Date.now();
   try {
     const response = await openAiClient.responses.create({
-      model: openAiModel,
-      temperature: 0.2,
       input: [
         {
-          role: "system",
           content: [
             {
-              type: "input_text",
               text: 'Você é um avaliador de vagas. Compare o currículo com a vaga e responda exclusivamente com JSON seguindo o formato: {"overallScore": number 0-100, "matchedSkills": string[], "missingSkills": string[], "insights": string, "strengths": string[], "gaps": string[], "suggestedQuestions": string[]}.',
+              type: "input_text",
             },
           ],
+          role: "system",
         },
         {
-          role: "user",
           content: [
             {
-              type: "input_text",
               text: `Job JSON:\n${JSON.stringify(job, null, 2)}\n\nResume Markdown:\n${resumeMarkdown}`,
+              type: "input_text",
             },
           ],
+          role: "user",
         },
       ],
       max_output_tokens: 800,
+      model: openAiModel,
+      temperature: 0.2,
     });
 
     const durationMs = Date.now() - startedAt;
@@ -94,10 +90,10 @@ export async function analyzeMatch({
 
     logger.info(
       {
-        source: "openai",
-        model: openAiModel,
         durationMs,
         jobId: job.id,
+        model: openAiModel,
+        source: "openai",
         tokens: response.usage,
       },
       "OpenAI analysis completed"
@@ -107,8 +103,8 @@ export async function analyzeMatch({
       analysis: parsed,
       source: "openai",
       usage: {
-        promptTokens: response.usage?.input_tokens,
         completionTokens: response.usage?.output_tokens,
+        promptTokens: response.usage?.input_tokens,
         totalTokens: response.usage?.total_tokens,
       },
     };
@@ -171,7 +167,7 @@ function computeFallbackAnalysis(job: Job, resumeMarkdown: string): MatchAnalysi
   const missingHighlights = Array.from(missing).slice(0, 5);
   const suggestedQuestions = missingHighlights.map((item) => `Conte sobre sua experiência recente com ${item}.`);
 
-  const insightParts = [] as string[];
+  const insightParts = [] as Array<string>;
   insightParts.push(
     `Cobertura estimada de ${(coverage * 100).toFixed(0)}% dos requisitos mencionados para ${job.title}.`
   );
@@ -182,12 +178,12 @@ function computeFallbackAnalysis(job: Job, resumeMarkdown: string): MatchAnalysi
   }
 
   return {
-    overallScore: score,
+    gaps: missingHighlights,
+    insights: insightParts.join(" "),
     matchedSkills: Array.from(matched).sort(),
     missingSkills: Array.from(missing).sort(),
-    insights: insightParts.join(" "),
+    overallScore: score,
     strengths: Array.from(matched).slice(0, 5),
-    gaps: missingHighlights,
     suggestedQuestions,
   };
 }

@@ -8,20 +8,20 @@ export interface PresetResume {
   markdown: string;
 }
 
-let cachedResumes: PresetResume[] | null = null;
+let cachedResumes: Array<PresetResume> | null = null;
 
 function getResumeDirectory(): string {
   return path.resolve(process.cwd(), "..", "mocks", "cvs");
 }
 
-async function loadResumes(): Promise<PresetResume[]> {
+async function loadResumes(): Promise<Array<PresetResume>> {
   if (cachedResumes) {
     return cachedResumes;
   }
 
   const directory = getResumeDirectory();
   const entries = await fs.readdir(directory, { withFileTypes: true });
-  const resumes: PresetResume[] = [];
+  const resumes: Array<PresetResume> = [];
 
   for (const entry of entries) {
     if (!entry.isFile() || !entry.name.endsWith(".md")) {
@@ -37,14 +37,14 @@ async function loadResumes(): Promise<PresetResume[]> {
       .replace(/\.md$/, "")
       .replace(/\b\w/g, (match) => match.toUpperCase());
 
-    resumes.push({ id, label, filename: entry.name, markdown });
+    resumes.push({ filename: entry.name, id, label, markdown });
   }
 
   cachedResumes = resumes;
   return resumes;
 }
 
-export async function getPresetResumes(): Promise<PresetResume[]> {
+export async function getPresetResumes(): Promise<Array<PresetResume>> {
   const resumes = await loadResumes();
   return resumes.map((resume) => ({ ...resume }));
 }

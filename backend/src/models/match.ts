@@ -3,35 +3,35 @@ import { z } from "zod";
 import { JobSchema, type Job } from "./job.js";
 
 export const MatchRequestSchema = z.object({
-  job: z.unknown(),
-  resumeMarkdown: z.string().min(1),
   candidate: z
     .object({
       id: z.string().optional(),
       name: z.string().optional(),
     })
     .optional(),
+  job: z.unknown(),
+  resumeMarkdown: z.string().min(1),
   source: z.enum(["upload", "preset", "manual"]).optional(),
 });
 
 export type MatchRequestPayload = z.infer<typeof MatchRequestSchema>;
 
 export interface MatchResult {
-  id: string;
+  analysisSource: "fallback" | "openai";
   candidateId: string;
   candidateName?: string;
-  jobId: string;
-  overallScore: number;
-  matchedSkills: string[];
-  missingSkills: string[];
-  insights: string;
-  suggestedQuestions?: string[];
-  strengths: string[];
-  gaps: string[];
-  analysisSource: "openai" | "fallback";
-  job: Job;
-  resumeMarkdown: string;
   createdAt: string;
+  gaps: Array<string>;
+  id: string;
+  insights: string;
+  job: Job;
+  jobId: string;
+  matchedSkills: Array<string>;
+  missingSkills: Array<string>;
+  overallScore: number;
+  resumeMarkdown: string;
+  strengths: Array<string>;
+  suggestedQuestions?: Array<string>;
 }
 
 export type MatchSummary = Pick<
@@ -40,8 +40,8 @@ export type MatchSummary = Pick<
 >;
 
 export function buildMatchSummary(result: MatchResult): MatchSummary {
-  const { id, candidateId, candidateName, jobId, overallScore, analysisSource, createdAt } = result;
-  return { id, candidateId, candidateName, jobId, overallScore, analysisSource, createdAt };
+  const { analysisSource, candidateId, candidateName, createdAt, id, jobId, overallScore } = result;
+  return { analysisSource, candidateId, candidateName, createdAt, id, jobId, overallScore };
 }
 
 export function parseJob(input: unknown): Job {
