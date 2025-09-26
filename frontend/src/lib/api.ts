@@ -1,59 +1,59 @@
 export type PresetResume = {
+  filename: string;
   id: string;
   label: string;
-  filename: string;
   markdown: string;
 };
 
 export type Job = {
-  id: string;
-  title?: string;
   company?: {
     name?: string;
   };
   description?: string;
-  responsibilities?: string[];
+  id: string;
   requirements?: {
-    mandatory?: Array<{
-      category: string;
-      items: Array<string | { language: string; level: string }>;
-    }>;
     desirable?: Array<{
       category: string;
       items: Array<string | { language: string; level: string }>;
     }>;
+    mandatory?: Array<{
+      category: string;
+      items: Array<string | { language: string; level: string }>;
+    }>;
   };
+  responsibilities?: Array<string>;
+  title?: string;
 };
 
 export type MatchSummary = {
-  id: string;
+  analysisSource: "fallback" | "openai";
   candidateId: string;
   candidateName?: string;
+  createdAt: string;
+  id: string;
   jobId: string;
   overallScore: number;
-  analysisSource: "openai" | "fallback";
-  createdAt: string;
 };
 
 export type MatchResult = MatchSummary & {
-  matchedSkills: string[];
-  missingSkills: string[];
-  strengths: string[];
-  gaps: string[];
+  gaps: Array<string>;
   insights: string;
-  suggestedQuestions?: string[];
-  resumeMarkdown: string;
   job: Job;
+  matchedSkills: Array<string>;
+  missingSkills: Array<string>;
+  resumeMarkdown: string;
+  strengths: Array<string>;
+  suggestedQuestions?: Array<string>;
 };
 
 export type MatchRequest = {
-  job: unknown;
-  resumeMarkdown: string;
   candidate?: {
     id?: string;
     name?: string;
   };
-  source?: "upload" | "preset" | "manual";
+  job: unknown;
+  resumeMarkdown: string;
+  source?: "manual" | "preset" | "upload";
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
@@ -80,9 +80,9 @@ async function extractErrorMessage(response: Response): Promise<string> {
   return response.statusText || "Unexpected API error";
 }
 
-export async function fetchPresetResumes(signal?: AbortSignal): Promise<PresetResume[]> {
+export async function fetchPresetResumes(signal?: AbortSignal): Promise<Array<PresetResume>> {
   const response = await fetch(`${API_BASE}/presets/resumes`, { signal });
-  return handleResponse<PresetResume[]>(response);
+  return handleResponse<Array<PresetResume>>(response);
 }
 
 export async function fetchBackendStatus(signal?: AbortSignal): Promise<{
@@ -94,23 +94,25 @@ export async function fetchBackendStatus(signal?: AbortSignal): Promise<{
 
 export async function createMatch(payload: MatchRequest, signal?: AbortSignal): Promise<MatchSummary> {
   const response = await fetch(`${API_BASE}/match`, {
-    method: "POST",
+    body: JSON.stringify(payload),
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(payload),
+    method: "POST",
     signal,
   });
 
   return handleResponse<MatchSummary>(response);
 }
 
-export async function fetchMatchSummaries(signal?: AbortSignal): Promise<MatchSummary[]> {
+export async function fetchMatchSummaries(signal?: AbortSignal): Promise<Array<MatchSummary>> {
   const response = await fetch(`${API_BASE}/match`, { signal });
-  return handleResponse<MatchSummary[]>(response);
+
+  return handleResponse<Array<MatchSummary>>(response);
 }
 
 export async function fetchMatchReport(id: string, signal?: AbortSignal): Promise<MatchResult> {
   const response = await fetch(`${API_BASE}/match/report/${id}`, { signal });
+
   return handleResponse<MatchResult>(response);
 }

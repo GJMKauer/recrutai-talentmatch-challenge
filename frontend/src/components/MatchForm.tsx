@@ -19,8 +19,8 @@ import type { MatchRequest, PresetResume } from "../lib/api";
 
 type MatchFormProps = {
   isSubmitting: boolean;
-  presetResumes: PresetResume[];
   onSubmit: (payload: MatchRequest) => Promise<void> | void;
+  presetResumes: Array<PresetResume>;
   resetKey?: number;
 };
 
@@ -30,13 +30,13 @@ type FormErrors = {
 };
 
 const initialState = {
+  candidateId: "",
+  candidateName: "",
   jobText: "",
   resumeText: "",
-  candidateName: "",
-  candidateId: "",
 };
 
-export function MatchForm({ isSubmitting, presetResumes, onSubmit, resetKey }: MatchFormProps) {
+export function MatchForm({ isSubmitting, onSubmit, presetResumes, resetKey }: MatchFormProps) {
   const [formState, setFormState] = useState(initialState);
   const [selectedPreset, setSelectedPreset] = useState<string>("");
   const [errors, setErrors] = useState<FormErrors>({});
@@ -108,12 +108,12 @@ export function MatchForm({ isSubmitting, presetResumes, onSubmit, resetKey }: M
     setErrors({});
 
     await onSubmit({
-      job: jobPayload,
-      resumeMarkdown: trimmedResume,
       candidate: {
         id: formState.candidateId.trim() || undefined,
         name: formState.candidateName.trim() || undefined,
       },
+      job: jobPayload,
+      resumeMarkdown: trimmedResume,
       source: selectedPreset ? "preset" : "manual",
     });
   };
@@ -122,7 +122,7 @@ export function MatchForm({ isSubmitting, presetResumes, onSubmit, resetKey }: M
     <Paper component="form" elevation={3} onSubmit={handleSubmit} sx={{ p: 3 }}>
       <Stack spacing={3}>
         <Box>
-          <Typography component="h2" variant="h5" gutterBottom>
+          <Typography component="h2" gutterBottom variant="h5">
             Analisar Vaga e Currículo
           </Typography>
           <Typography color="text.secondary" variant="body2">
@@ -130,30 +130,29 @@ export function MatchForm({ isSubmitting, presetResumes, onSubmit, resetKey }: M
           </Typography>
         </Box>
 
-        <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+        <Stack direction={{ md: "row", xs: "column" }} spacing={2}>
           <TextField
-            label="Nome do candidato (opcional)"
             fullWidth
-            value={formState.candidateName}
+            label="Nome do candidato (opcional)"
             onChange={handleChange("candidateName")}
+            value={formState.candidateName}
           />
           <TextField
-            label="ID do candidato (opcional)"
             fullWidth
-            value={formState.candidateId}
+            label="ID do candidato (opcional)"
             onChange={handleChange("candidateId")}
+            value={formState.candidateId}
           />
         </Stack>
 
         <Stack spacing={1}>
-          <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ sm: "center" }}>
+          <Stack alignItems={{ sm: "center" }} direction={{ sm: "row", xs: "column" }} spacing={1}>
             <Typography variant="subtitle1">JSON da vaga</Typography>
-            <Button component="label" startIcon={<CloudUploadIcon />} variant="outlined" size="small">
+            <Button component="label" size="small" startIcon={<CloudUploadIcon />} variant="outlined">
               Carregar arquivo
               <input
-                type="file"
-                hidden
                 accept="application/json"
+                hidden
                 onChange={async (event) => {
                   const file = event.target.files?.[0];
                   if (file) {
@@ -161,30 +160,30 @@ export function MatchForm({ isSubmitting, presetResumes, onSubmit, resetKey }: M
                     event.target.value = "";
                   }
                 }}
+                type="file"
               />
             </Button>
           </Stack>
           <TextField
             aria-label="Vaga em JSON"
-            multiline
-            minRows={8}
-            value={formState.jobText}
-            onChange={handleChange("jobText")}
             error={Boolean(errors.job)}
             helperText={errors.job}
+            minRows={8}
+            multiline
+            onChange={handleChange("jobText")}
             placeholder="Cole o JSON completo da vaga aqui"
+            value={formState.jobText}
           />
         </Stack>
 
         <Stack spacing={1}>
-          <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ sm: "center" }}>
+          <Stack alignItems={{ sm: "center" }} direction={{ sm: "row", xs: "column" }} spacing={1}>
             <Typography variant="subtitle1">Currículo em Markdown</Typography>
-            <Button component="label" startIcon={<CloudUploadIcon />} variant="outlined" size="small">
+            <Button component="label" size="small" startIcon={<CloudUploadIcon />} variant="outlined">
               Carregar arquivo
               <input
-                type="file"
-                hidden
                 accept="text/markdown,text/plain"
+                hidden
                 onChange={async (event) => {
                   const file = event.target.files?.[0];
                   if (file) {
@@ -193,19 +192,20 @@ export function MatchForm({ isSubmitting, presetResumes, onSubmit, resetKey }: M
                     event.target.value = "";
                   }
                 }}
+                type="file"
               />
             </Button>
           </Stack>
 
-          {presetResumes.length > 0 && (
+          {presetResumes.length > 0 ? (
             <FormControl fullWidth size="small">
               <InputLabel id="preset-resume-label">Currículos de exemplo</InputLabel>
               <Select
-                labelId="preset-resume-label"
-                value={selectedPreset}
-                label="Currículos de exemplo"
-                onChange={handlePresetSelection}
                 disabled={isSubmitting}
+                label="Currículos de exemplo"
+                labelId="preset-resume-label"
+                onChange={handlePresetSelection}
+                value={selectedPreset}
               >
                 <MenuItem value="">
                   <em>Nenhum</em>
@@ -217,22 +217,22 @@ export function MatchForm({ isSubmitting, presetResumes, onSubmit, resetKey }: M
                 ))}
               </Select>
             </FormControl>
-          )}
+          ) : null}
 
           <TextField
             aria-label="Currículo em Markdown"
-            multiline
-            minRows={12}
-            value={formState.resumeText}
-            onChange={handleChange("resumeText")}
             error={Boolean(errors.resume)}
             helperText={errors.resume}
+            minRows={12}
+            multiline
+            onChange={handleChange("resumeText")}
             placeholder="Cole aqui o conteúdo do currículo em Markdown"
+            value={formState.resumeText}
           />
         </Stack>
 
         <Box display="flex" justifyContent="flex-end">
-          <Button type="submit" variant="contained" size="large" disabled={isSubmitting}>
+          <Button disabled={isSubmitting} size="large" type="submit" variant="contained">
             {isSubmitting ? "Calculando..." : "Calcular Match"}
           </Button>
         </Box>

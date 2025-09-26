@@ -31,45 +31,51 @@ type MatchResultCardProps = {
 export function MatchResultCard({ result }: MatchResultCardProps) {
   const createdAtLabel = dayjs(result.createdAt).isValid() ? dayjs(result.createdAt).fromNow() : null;
 
-  const scoreColor = result.overallScore >= 80 ? "success" : result.overallScore >= 60 ? "warning" : "error";
+  const getScoreColor = () => {
+    if (result.overallScore >= 80) return "success";
+    if (result.overallScore >= 60) return "warning";
+    return "error";
+  }
+
+  const scoreColor = getScoreColor();
 
   return (
     <Card elevation={3} sx={{ height: "100%" }}>
       <CardHeader
-        title={result.candidateName ?? `Candidato ${result.candidateId}`}
+        action={<Chip color="default" label={result.analysisSource === "openai" ? "OpenAI" : "Heurístico"} />}
         subheader={
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Typography variant="body2" color="text.secondary">
+          <Stack alignItems="center" direction="row" spacing={1}>
+            <Typography color="text.secondary" variant="body2">
               {result.job?.title ?? "Vaga analisada"}
             </Typography>
-            {result.job?.company?.name && (
-              <Typography variant="body2" color="text.secondary">
+            {result.job?.company?.name ? (
+              <Typography color="text.secondary" variant="body2">
                 · {result.job.company.name}
               </Typography>
-            )}
-            {createdAtLabel && (
-              <Typography variant="body2" color="text.secondary">
+            ) : null}
+            {createdAtLabel ? (
+              <Typography color="text.secondary" variant="body2">
                 · {createdAtLabel}
               </Typography>
-            )}
+            ) : null}
           </Stack>
         }
-        action={<Chip label={result.analysisSource === "openai" ? "OpenAI" : "Heurístico"} color="default" />}
+        title={result.candidateName ?? `Candidato ${result.candidateId}`}
       />
       <CardContent>
         <Stack spacing={3}>
           <Box>
-            <Typography variant="h2" component="p" color={`${scoreColor}.main`}>
+            <Typography color={`${scoreColor}.main`} component="p" variant="h2">
               {result.overallScore}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography color="text.secondary" variant="body2">
               Score geral de aderência
             </Typography>
             <LinearProgress
-              variant="determinate"
-              value={result.overallScore}
               color={scoreColor}
-              sx={{ mt: 1, height: 10, borderRadius: 5 }}
+              sx={{ borderRadius: 5, height: 10, mt: 1 }}
+              value={result.overallScore}
+              variant="determinate"
             />
           </Box>
 
@@ -81,16 +87,16 @@ export function MatchResultCard({ result }: MatchResultCardProps) {
           </Box>
 
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <Typography variant="subtitle1" gutterBottom>
+            <Grid item md={6} xs={12}>
+              <Typography gutterBottom variant="subtitle1">
                 Forças
               </Typography>
               <List dense>
-                {result.strengths.length === 0 && (
+                {result.strengths.length === 0 ? (
                   <ListItem>
                     <ListItemText primary="Nenhum ponto forte destacado" />
                   </ListItem>
-                )}
+                ) : null}
                 {result.strengths.map((item) => (
                   <ListItem key={item}>
                     <ListItemIcon>
@@ -101,16 +107,16 @@ export function MatchResultCard({ result }: MatchResultCardProps) {
                 ))}
               </List>
             </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography variant="subtitle1" gutterBottom>
+            <Grid item md={6} xs={12}>
+              <Typography gutterBottom variant="subtitle1">
                 Lacunas
               </Typography>
               <List dense>
-                {result.gaps.length === 0 && (
+                {result.gaps.length === 0 ? (
                   <ListItem>
                     <ListItemText primary="Nenhuma lacuna relevante" />
                   </ListItem>
-                )}
+                ) : null}
                 {result.gaps.map((item) => (
                   <ListItem key={item}>
                     <ListItemIcon>
@@ -126,33 +132,33 @@ export function MatchResultCard({ result }: MatchResultCardProps) {
           <Divider />
 
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <Typography variant="subtitle1" gutterBottom>
+            <Grid item md={6} xs={12}>
+              <Typography gutterBottom variant="subtitle1">
                 Skills aderentes
               </Typography>
               <Stack direction="row" flexWrap="wrap" gap={1}>
-                {result.matchedSkills.length === 0 && <Chip label="Sem correspondências" variant="outlined" />}
+                {result.matchedSkills.length === 0 ? <Chip label="Sem correspondências" variant="outlined" /> : null}
                 {result.matchedSkills.map((skill) => (
-                  <Chip key={skill} label={skill} color="success" variant="outlined" />
+                  <Chip color="success" key={skill} label={skill} variant="outlined" />
                 ))}
               </Stack>
             </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography variant="subtitle1" gutterBottom>
+            <Grid item md={6} xs={12}>
+              <Typography gutterBottom variant="subtitle1">
                 Skills faltantes
               </Typography>
               <Stack direction="row" flexWrap="wrap" gap={1}>
-                {result.missingSkills.length === 0 && <Chip label="Nenhuma lacuna" variant="outlined" />}
+                {result.missingSkills.length === 0 ? <Chip label="Nenhuma lacuna" variant="outlined" /> : null}
                 {result.missingSkills.map((skill) => (
-                  <Chip key={skill} label={skill} color="warning" variant="outlined" />
+                  <Chip color="warning" key={skill} label={skill} variant="outlined" />
                 ))}
               </Stack>
             </Grid>
           </Grid>
 
-          {result.suggestedQuestions && result.suggestedQuestions.length > 0 && (
+          {result.suggestedQuestions && result.suggestedQuestions.length > 0 ? (
             <Box>
-              <Typography variant="subtitle1" gutterBottom>
+              <Typography gutterBottom variant="subtitle1">
                 Sugestões de perguntas para entrevista
               </Typography>
               <List dense>
@@ -166,7 +172,7 @@ export function MatchResultCard({ result }: MatchResultCardProps) {
                 ))}
               </List>
             </Box>
-          )}
+          ) : null}
         </Stack>
       </CardContent>
     </Card>

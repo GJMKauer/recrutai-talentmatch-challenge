@@ -1,9 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import Grid from "@mui/material/GridLegacy";
 import {
   Alert,
   Box,
@@ -25,7 +22,8 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-
+import Grid from "@mui/material/GridLegacy";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MatchForm } from "../components/MatchForm";
 import { MatchResultCard } from "../components/MatchResultCard";
 import {
@@ -40,13 +38,13 @@ import {
   type PresetResume,
 } from "../lib/api";
 
-type ViewMode = "individual" | "comparison";
+type ViewMode = "comparison" | "individual";
 
 type MatchDetailDictionary = Record<string, MatchResult>;
 
 export function App() {
-  const [presetResumes, setPresetResumes] = useState<PresetResume[]>([]);
-  const [matches, setMatches] = useState<MatchSummary[]>([]);
+  const [presetResumes, setPresetResumes] = useState<Array<PresetResume>>([]);
+  const [matches, setMatches] = useState<Array<MatchSummary>>([]);
   const [matchDetails, setMatchDetails] = useState<MatchDetailDictionary>({});
   const matchDetailsRef = useRef<MatchDetailDictionary>({});
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
@@ -179,7 +177,7 @@ export function App() {
 
   const renderComparisonTable = () => (
     <Paper elevation={3} sx={{ p: 2 }}>
-      <Table size="small" aria-label="Comparação de candidatos">
+      <Table aria-label="Comparação de candidatos" size="small">
         <TableHead>
           <TableRow>
             <TableCell>Candidato</TableCell>
@@ -191,29 +189,29 @@ export function App() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {matches.length === 0 && (
+          {matches.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} align="center">
+              <TableCell align="center" colSpan={6}>
                 Nenhum match calculado ainda.
               </TableCell>
             </TableRow>
-          )}
+          ) : null}
           {matches.map((summary) => {
             const isBest = summary.overallScore === bestScore && bestScore > 0;
             return (
-              <TableRow key={summary.id} hover selected={selectedMatchId === summary.id}>
+              <TableRow hover key={summary.id} selected={selectedMatchId === summary.id}>
                 <TableCell>{summary.candidateName ?? "Sem nome"}</TableCell>
                 <TableCell>{summary.candidateId}</TableCell>
                 <TableCell align="right">
-                  <Stack direction="row" justifyContent="flex-end" spacing={1} alignItems="center">
-                    {isBest && <Chip label="Top" color="success" size="small" />}
+                  <Stack alignItems="center" direction="row" justifyContent="flex-end" spacing={1}>
+                    {isBest ? <Chip color="success" label="Top" size="small" /> : null}
                     <Typography variant="body1">{summary.overallScore}</Typography>
                   </Stack>
                 </TableCell>
                 <TableCell>{summary.analysisSource === "openai" ? "OpenAI" : "Heurístico"}</TableCell>
                 <TableCell>{new Date(summary.createdAt).toLocaleString()}</TableCell>
                 <TableCell align="right">
-                  <Button size="small" onClick={() => handleSelectMatch(summary.id)}>
+                  <Button onClick={() => handleSelectMatch(summary.id)} size="small">
                     Ver detalhes
                   </Button>
                 </TableCell>
@@ -239,7 +237,7 @@ export function App() {
 
     if (!selectedMatch) {
       return (
-        <Box display="flex" alignItems="center" justifyContent="center" minHeight={240}>
+        <Box alignItems="center" display="flex" justifyContent="center" minHeight={240}>
           {isLoadingDetails ? <CircularProgress /> : <Typography>Nenhum detalhe disponível.</Typography>}
         </Box>
       );
@@ -248,10 +246,25 @@ export function App() {
     return <MatchResultCard result={selectedMatch} />;
   };
 
+  const renderMainContent = () => {
+    switch (true) {
+      case !initialLoadComplete:
+        return (
+          <Box alignItems="center" display="flex" flexGrow={1} justifyContent="center">
+            <CircularProgress />
+          </Box>
+        );
+      case viewMode === "comparison":
+        return renderComparisonTable();
+      case viewMode === "individual":
+        return renderIndividualResult();
+    }
+  };
+
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Grid container spacing={4} alignItems="stretch">
-        <Grid item xs={12} md={5} lg={4}>
+      <Grid alignItems="stretch" container spacing={4}>
+        <Grid item lg={4} md={5} xs={12}>
           <Stack spacing={2} sx={{ height: "100%" }}>
             <MatchForm
               isSubmitting={isSubmittingMatch}
@@ -260,17 +273,16 @@ export function App() {
               resetKey={formResetKey}
             />
             <Paper elevation={1} sx={{ p: 2 }}>
-              <Stack direction="row" spacing={2} alignItems="center">
+              <Stack alignItems="center" direction="row" spacing={2}>
                 <Typography variant="subtitle1">Status da IA</Typography>
                 {status?.ai.openaiConfigured ? (
-                  <Chip label="OpenAI configurado" color="success" size="small" />
+                  <Chip color="success" label="OpenAI configurado" size="small" />
                 ) : (
-                  <Chip label="Modo heurístico" color="warning" size="small" />
+                  <Chip color="warning" label="Modo heurístico" size="small" />
                 )}
                 <Tooltip title="Atualizar status">
                   <span>
                     <IconButton
-                      size="small"
                       aria-label="Atualizar status"
                       onClick={async () => {
                         try {
@@ -281,6 +293,7 @@ export function App() {
                           setErrorMessage((error as Error).message ?? "Falha ao atualizar status.");
                         }
                       }}
+                      size="small"
                     >
                       <RefreshIcon fontSize="small" />
                     </IconButton>
@@ -290,54 +303,43 @@ export function App() {
             </Paper>
           </Stack>
         </Grid>
-        <Grid item xs={12} md={7} lg={8}>
+        <Grid item lg={8} md={7} xs={12}>
           <Stack spacing={2} sx={{ height: "100%" }}>
-            {status && !status.ai.openaiConfigured && (
+            {status && !status.ai.openaiConfigured ? (
               <Alert severity="info">
                 A chave da OpenAI não está configurada. Utilizando análise heurística para gerar os resultados.
               </Alert>
-            )}
-
-            <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ sm: "center" }} spacing={2}>
-              <Typography variant="h5" component="h2">
+            ) : null}
+            <Stack alignItems={{ sm: "center" }} direction={{ sm: "row", xs: "column" }} spacing={2}>
+              <Typography component="h2" variant="h5">
                 Resultados
               </Typography>
               <ToggleButtonGroup
+                aria-label="Modo de visualização"
                 exclusive
+                onChange={handleViewModeChange}
                 size="small"
                 value={viewMode}
-                onChange={handleViewModeChange}
-                aria-label="Modo de visualização"
               >
-                <ToggleButton value="individual" aria-label="Visualizar resultado individual">
+                <ToggleButton aria-label="Visualizar resultado individual" value="individual">
                   <AssessmentIcon fontSize="small" sx={{ mr: 1 }} /> Individual
                 </ToggleButton>
-                <ToggleButton value="comparison" aria-label="Visualizar comparação de resultados">
+                <ToggleButton aria-label="Visualizar comparação de resultados" value="comparison">
                   <ListAltIcon fontSize="small" sx={{ mr: 1 }} /> Comparativo
                 </ToggleButton>
               </ToggleButtonGroup>
             </Stack>
 
-            {!initialLoadComplete ? (
-              <Box display="flex" alignItems="center" justifyContent="center" flexGrow={1}>
-                <CircularProgress />
-              </Box>
-            ) : viewMode === "comparison" ? (
-              renderComparisonTable()
-            ) : (
-              renderIndividualResult()
-            )}
+            {renderMainContent()}
           </Stack>
         </Grid>
       </Grid>
-
-      <Snackbar open={Boolean(errorMessage)} autoHideDuration={6000} onClose={() => setErrorMessage(null)}>
+      <Snackbar autoHideDuration={6000} onClose={() => setErrorMessage(null)} open={Boolean(errorMessage)}>
         <Alert onClose={() => setErrorMessage(null)} severity="error" sx={{ width: "100%" }}>
           {errorMessage}
         </Alert>
       </Snackbar>
-
-      <Snackbar open={Boolean(infoMessage)} autoHideDuration={4000} onClose={() => setInfoMessage(null)}>
+      <Snackbar autoHideDuration={4000} onClose={() => setInfoMessage(null)} open={Boolean(infoMessage)}>
         <Alert onClose={() => setInfoMessage(null)} severity="success" sx={{ width: "100%" }}>
           {infoMessage}
         </Alert>
