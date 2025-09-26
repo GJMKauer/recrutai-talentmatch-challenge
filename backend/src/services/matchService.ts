@@ -1,7 +1,5 @@
 import type { FastifyBaseLogger } from "fastify";
-
 import { v4 as uuid } from "uuid";
-
 import {
   MatchRequestSchema,
   buildMatchSummary,
@@ -10,7 +8,6 @@ import {
   type MatchResult,
   type MatchSummary,
 } from "../models/match.js";
-
 import { analyzeMatch } from "./openaiClient.js";
 
 const matchStore = new Map<string, MatchResult>();

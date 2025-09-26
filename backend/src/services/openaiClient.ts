@@ -18,6 +18,8 @@ const matchAnalysisSchema = z.object({
 export type MatchAnalysis = z.infer<typeof matchAnalysisSchema>;
 
 const openAiApiKey = process.env.OPENAI_API_KEY;
+console.log("Using OpenAI API Key:", openAiApiKey ? "Provided" : "Not Provided");
+console.log("Key:", openAiApiKey);
 const openAiModel = process.env.OPENAI_MATCH_MODEL ?? "gpt-4o-mini";
 
 const openAiClient = openAiApiKey ? new OpenAI({ apiKey: openAiApiKey }) : null;

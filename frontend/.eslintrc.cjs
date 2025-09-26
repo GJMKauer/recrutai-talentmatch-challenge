@@ -11,14 +11,6 @@ module.exports = {
     require: "readonly",
   },
   ignorePatterns: ["dist", ".eslintrc.cjs"],
-  overrides: [
-    {
-      files: ["*ObjectOf.ts"],
-      rules: {
-        "custom-rules/object-of-typing": "off",
-      },
-    },
-  ],
   parser: "@typescript-eslint/parser",
   plugins: [
     "@typescript-eslint",
