@@ -32,11 +32,11 @@ export const resetMatchAnalyzer = (): void => {
   analyzer = analyzeMatch;
 };
 
-/** Cria uma nova análise de compatibilidade com base na carga útil fornecida.
- * Valida a carga útil, executa a análise e armazena o resultado em memória.
- * @param params - Um objeto contendo o logger e a carga útil da análise.
+/** Cria uma nova análise de compatibilidade com base nos dados fornecidos.
+ * Valida o payload, executa a análise e armazena o resultado em memória.
+ * @param params - Um objeto contendo o logger e o payload da análise.
  * @returns Um objeto contendo o resultado completo da análise e um resumo.
- * @throws Um erro Zod se a validação da carga útil falhar.
+ * @throws Um erro Zod se a validação do payload falhar.
  * @throws Outros erros podem ser lançados durante a análise ou armazenamento do resultado.
  */
 export const createMatch = async (

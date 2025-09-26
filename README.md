@@ -99,11 +99,40 @@ Os testes trocam o analisador da service (`setMatchAnalyzer`) para simular respo
 5. Aprimoramentos e refinamentos no prompt/treinamento da IA para uma validação mais precisa.
 
 
----
-
 ## Decisões Técnicas e trade-offs
-TODO.
+### Frontend
 
+- **Stack:** React + Vite
+- **Por quê:** Inicialização rápida do projeto, *Developer Experience* simples e familiaridade prévia.
+- **Trade-offs:** Vite facilita a configuração inicial e HMR, mas exige alguns ajustes de build para cenários mais complexos (ex.: SSR ou integrações específicas - não é o caso desse MVP).
+
+### Estilização
+
+- **Biblioteca:** Material UI (MUI)
+- **Por quê:** Legibilidade alta e amplo catálogo de componentes prontos, acelerando o MVP sem CSS extensivo.
+- **Trade-offs:** MUI entrega produtividade imediata; Tailwind daria controle granular, porém com maior custo inicial de design system.
+
+### Backend
+
+- **Stack:** Node.js + Fastify
+- **Por quê:** Alinhamento com a stack utilizada pela Recrut.AI e objetivo de reciclar experiência com Node no backend. O Fastify foi escolhido em relação ao Express pelas validações nativas, performance e uma estrutura de rotas/handlers mais amigável.
+- **Trade-offs:** Sem necessidade de middlewares específicos, o Express não traria vantagens claras neste MVP.
+
+### IA para Análise de Currículos
+
+- **Serviço:** OpenAI API
+- **Por quê:** Integração simples em Node/Python, modelo robusto para análise textual e geração de saídas padronizadas.
+- **Trade-offs:** Dependência externa (custo/latência) — mitigado com fallback heurístico e contrato de resposta consistente.
+
+### Ferramentas de Apoio
+- **Lovable:** Referência de estrutura de componentes, apresentação em tela e modelagem de dados amigável ao usuário.
+- **Codex (VSCode):** Geração da maior parte do código e lógica do MVP, otimizando tempo de desenvolvimento.
+
+### Contribuições Manuais
+
+- Regras de **ESLint** e **Prettier** ajustadas para padronização do código.
+- Testes e correções visuais pontuais.
+- **Documentação**: melhorias no README do desafio e docstrings em funções, métodos e componentes.
 
 ## IA DevTools
 - Codex
