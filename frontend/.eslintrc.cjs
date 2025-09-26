@@ -3,7 +3,6 @@ module.exports = {
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:cypress/recommended",
     "plugin:react-hooks/recommended",
   ],
   globals: {
@@ -44,7 +43,6 @@ module.exports = {
     "custom-rules/array-typing": "error",
     "custom-rules/no-and-operator": "error",
     "custom-rules/no-hex-colors": "error",
-    "custom-rules/object-of-typing": "error",
     "max-len": [
       "error",
       {
