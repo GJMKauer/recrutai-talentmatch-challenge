@@ -18,10 +18,12 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/GridLegacy";
 import dayjs from "dayjs";
+import "dayjs/locale/pt-br";
 import relativeTime from "dayjs/plugin/relativeTime";
 import type { MatchResult } from "../lib/api";
 
 dayjs.extend(relativeTime);
+dayjs.locale("pt-br");
 
 type MatchResultCardProps = {
   result: MatchResult;
