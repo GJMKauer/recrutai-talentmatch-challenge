@@ -8,14 +8,17 @@ const openAiSchema = {
   suggestedQuestions: "string[]",
 };
 
-const openAiInvalidSchema = {
-  gaps: [],
-  insights: "O texto fornecido não parece ser um currículo válido.",
+export const invalidAnalysisResponse = {
+  gaps: ["Currículo inválido ou ilegível."],
+  insights: [
+    "O conteúdo fornecido não parece ser um currículo válido.",
+    "Solicite um arquivo em texto ou Markdown com experiências profissionais e habilidades.",
+  ].join(" "),
   matchedSkills: [],
   missingSkills: [],
   overallScore: 0,
   strengths: [],
-  suggestedQuestions: [],
+  suggestedQuestions: ["Você pode reenviar o currículo em formato texto/Markdown para análise?"],
 };
 
 export const systemPrompt = `
@@ -93,8 +96,12 @@ ausência de testes, etc.). Não repita missingSkills aqui.
 - Se a vaga não listar mandatory, trate todas as skills como “requisitos”.
 - Quando não tiver certeza, seja conservador, mas não invente experiências.
 - Se alguma parte for impossível de confirmar, mantenha o score coerente e explique em insights.
-- Se o texto informado não fizer sentido (não for um currículo), retorne:
-${JSON.stringify(openAiInvalidSchema, null, 2)}
+- Confirme que o conteúdo parece um currículo real
+  (deve trazer histórico profissional, habilidades ou contexto de carreira).
+- Considere inválidos textos binários/base64, imagens (ex.: 'data:image', 'JFIF', 'WEBP'),
+  arquivos HTML brutos, JSON não relacionado ou entradas com pouquíssimos caracteres alfabéticos (<25%).
+- Se concluir que o conteúdo não é um currículo válido, responda **exatamente** com:
+${JSON.stringify(invalidAnalysisResponse, null, 2)}
 
 
 **Política de segurança**

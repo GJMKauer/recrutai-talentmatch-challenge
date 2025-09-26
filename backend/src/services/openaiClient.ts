@@ -16,7 +16,7 @@ const matchAnalysisSchema = z.object({
   suggestedQuestions: z.array(z.string()).optional(),
 });
 
-export type MatchAnalysis = z.infer<typeof matchAnalysisSchema>;
+type MatchAnalysis = z.infer<typeof matchAnalysisSchema>;
 
 type Logger = Pick<FastifyBaseLogger, "info" | "warn" | "error">;
 

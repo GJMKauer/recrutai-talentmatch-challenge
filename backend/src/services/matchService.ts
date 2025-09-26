@@ -8,6 +8,8 @@ import {
   type MatchResult,
   type MatchSummary,
 } from "../models/match.js";
+import { invalidAnalysisResponse } from "../utils/openAiPrompts.js";
+import { isLikelyInvalidResume } from "../utils/textGuards.js";
 import { analyzeMatch } from "./openaiClient.js";
 
 type CreateMatchParams = {
@@ -49,7 +51,21 @@ export const createMatch = async (
   const candidateId = data.candidate?.id ?? uuid();
   const matchId = uuid();
 
-  const analysisResult = await analyzer({ job, logger, resumeMarkdown: data.resumeMarkdown });
+  const resumeMarkdown = data.resumeMarkdown;
+
+  const analysisResult = isLikelyInvalidResume(resumeMarkdown)
+    ? (() => {
+        logger.warn(
+          { candidateId, jobId: job.id, matchId },
+          "Resume payload appears invalid. Using safe fallback analysis",
+        );
+        return {
+          analysis: { ...invalidAnalysisResponse },
+          source: "fallback" as const,
+          usage: undefined,
+        };
+      })()
+    : await analyzer({ job, logger, resumeMarkdown });
 
   const result: MatchResult = {
     analysisSource: analysisResult.source,
@@ -63,7 +79,7 @@ export const createMatch = async (
     matchedSkills: analysisResult.analysis.matchedSkills,
     missingSkills: analysisResult.analysis.missingSkills,
     overallScore: Math.round(analysisResult.analysis.overallScore),
-    resumeMarkdown: data.resumeMarkdown,
+    resumeMarkdown,
     strengths: analysisResult.analysis.strengths,
     suggestedQuestions: analysisResult.analysis.suggestedQuestions,
   };

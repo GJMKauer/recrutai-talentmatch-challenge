@@ -3,14 +3,8 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { afterEach, beforeEach, describe, it } from "node:test";
-import {
-  clearStore,
-  createMatch,
-  getMatchReport,
-  listMatchSummaries,
-  resetMatchAnalyzer,
-  setMatchAnalyzer,
-} from "../dist/services/matchService.js";
+import { clearStore, resetMatchAnalyzer, setMatchAnalyzer } from "../dist/internal/testHooks.js";
+import { createMatch, getMatchReport, listMatchSummaries } from "../dist/services/matchService.js";
 
 /** Cria um espião para capturar chamadas de função */
 const createSpy = () => {
@@ -142,5 +136,23 @@ describe("matchService", () => {
     assert.equal(summary.analysisSource, "openai");
     assert.equal(summary.overallScore, 91);
     assert.ok(logger.info.calls.length >= 1);
+  });
+
+  it("retorna fallback seguro quando o conteúdo do currículo não é textual", async () => {
+    const logger = createLogger();
+
+    const { result, summary } = await createMatch({
+      logger,
+      payload: {
+        job: jobFixture,
+        resumeMarkdown: "\u0000\u0001WEBP\u0002\u0003",
+      },
+    });
+
+    assert.equal(summary.analysisSource, "fallback");
+    assert.equal(summary.overallScore, 0);
+    assert.deepEqual(result.matchedSkills, []);
+    assert.ok(result.gaps.includes("Currículo inválido ou ilegível."));
+    assert.ok(logger.warn.calls.some(([, message]) => typeof message === "string" && message.includes("invalid")));
   });
 });

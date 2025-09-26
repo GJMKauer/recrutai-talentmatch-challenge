@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 
-export interface PresetResume {
+interface PresetResume {
   filename: string;
   id: string;
   label: string;
@@ -59,11 +59,7 @@ export const getPresetResumes = async (): Promise<Array<PresetResume>> => {
   return resumes.map((resume) => ({ ...resume }));
 };
 
-/** Recupera um currículo predefinido pelo ID.
- * @param id - O ID do currículo a ser recuperado.
- * @returns O currículo correspondente ou null se não for encontrado.
- * @throws Um erro se a leitura dos arquivos falhar.
- */
+/** Recupera um currículo predefinido pelo ID. */
 export const getPresetResume = async (id: string): Promise<PresetResume | null> => {
   const resumes = await loadResumes();
   return resumes.find((resume) => resume.id === id) ?? null;

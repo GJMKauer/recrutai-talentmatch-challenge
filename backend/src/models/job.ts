@@ -42,7 +42,7 @@ export const JobSchema = z
   .passthrough();
 
 export type Job = z.infer<typeof JobSchema>;
-export type RequirementItem = z.infer<typeof RequirementItemSchema>;
+type RequirementItem = z.infer<typeof RequirementItemSchema>;
 
 /** Extrai uma representação em string de um item de requisito.
  * @param requirement - O item de requisito, que pode ser uma string ou um objeto com linguagem e nível.
