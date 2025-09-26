@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import AssessmentIcon from '@mui/icons-material/Assessment';
-import ListAltIcon from '@mui/icons-material/ListAlt';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import Grid from '@mui/material/GridLegacy';
+import AssessmentIcon from "@mui/icons-material/Assessment";
+import ListAltIcon from "@mui/icons-material/ListAlt";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import Grid from "@mui/material/GridLegacy";
 import {
   Alert,
   Box,
@@ -24,10 +24,10 @@ import {
   ToggleButtonGroup,
   Tooltip,
   Typography,
-} from '@mui/material';
+} from "@mui/material";
 
-import { MatchForm } from '../components/MatchForm';
-import { MatchResultCard } from '../components/MatchResultCard';
+import { MatchForm } from "../components/MatchForm";
+import { MatchResultCard } from "../components/MatchResultCard";
 import {
   createMatch,
   fetchBackendStatus,
@@ -38,9 +38,9 @@ import {
   type MatchResult,
   type MatchSummary,
   type PresetResume,
-} from '../lib/api';
+} from "../lib/api";
 
-type ViewMode = 'individual' | 'comparison';
+type ViewMode = "individual" | "comparison";
 
 type MatchDetailDictionary = Record<string, MatchResult>;
 
@@ -50,7 +50,7 @@ export function App() {
   const [matchDetails, setMatchDetails] = useState<MatchDetailDictionary>({});
   const matchDetailsRef = useRef<MatchDetailDictionary>({});
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>('individual');
+  const [viewMode, setViewMode] = useState<ViewMode>("individual");
   const [isSubmittingMatch, setIsSubmittingMatch] = useState(false);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -84,7 +84,7 @@ export function App() {
       });
       return detail;
     } catch (error) {
-      setErrorMessage((error as Error).message ?? 'Não foi possível carregar o relatório.');
+      setErrorMessage((error as Error).message ?? "Não foi possível carregar o relatório.");
       throw error;
     } finally {
       setIsLoadingDetails(false);
@@ -110,7 +110,7 @@ export function App() {
         await loadMatchDetail(firstMatch.id);
       }
     } catch (error) {
-      setErrorMessage((error as Error).message ?? 'Falha ao carregar dados iniciais.');
+      setErrorMessage((error as Error).message ?? "Falha ao carregar dados iniciais.");
     } finally {
       setInitialLoadComplete(true);
     }
@@ -134,11 +134,11 @@ export function App() {
     try {
       setIsSubmittingMatch(true);
       const summary = await createMatch(payload);
-      setInfoMessage('Match calculado com sucesso.');
+      setInfoMessage("Match calculado com sucesso.");
 
       await refreshSummaries();
       setSelectedMatchId(summary.id);
-      setViewMode('individual');
+      setViewMode("individual");
       setFormResetKey((value) => value + 1);
 
       const detail = await fetchMatchReport(summary.id);
@@ -148,7 +148,7 @@ export function App() {
         return next;
       });
     } catch (error) {
-      setErrorMessage((error as Error).message ?? 'Não foi possível calcular o match.');
+      setErrorMessage((error as Error).message ?? "Não foi possível calcular o match.");
     } finally {
       setIsSubmittingMatch(false);
     }
@@ -159,7 +159,7 @@ export function App() {
       const summaries = await fetchMatchSummaries();
       setMatches(summaries);
     } catch (error) {
-      setErrorMessage((error as Error).message ?? 'Falha ao atualizar os resultados.');
+      setErrorMessage((error as Error).message ?? "Falha ao atualizar os resultados.");
     }
   }
 
@@ -171,7 +171,7 @@ export function App() {
 
   const handleSelectMatch = (matchId: string) => {
     setSelectedMatchId(matchId);
-    setViewMode('individual');
+    setViewMode("individual");
     loadMatchDetail(matchId).catch(() => {
       // Erro já exibido em toast
     });
@@ -202,7 +202,7 @@ export function App() {
             const isBest = summary.overallScore === bestScore && bestScore > 0;
             return (
               <TableRow key={summary.id} hover selected={selectedMatchId === summary.id}>
-                <TableCell>{summary.candidateName ?? 'Sem nome'}</TableCell>
+                <TableCell>{summary.candidateName ?? "Sem nome"}</TableCell>
                 <TableCell>{summary.candidateId}</TableCell>
                 <TableCell align="right">
                   <Stack direction="row" justifyContent="flex-end" spacing={1} alignItems="center">
@@ -210,7 +210,7 @@ export function App() {
                     <Typography variant="body1">{summary.overallScore}</Typography>
                   </Stack>
                 </TableCell>
-                <TableCell>{summary.analysisSource === 'openai' ? 'OpenAI' : 'Heurístico'}</TableCell>
+                <TableCell>{summary.analysisSource === "openai" ? "OpenAI" : "Heurístico"}</TableCell>
                 <TableCell>{new Date(summary.createdAt).toLocaleString()}</TableCell>
                 <TableCell align="right">
                   <Button size="small" onClick={() => handleSelectMatch(summary.id)}>
@@ -228,7 +228,7 @@ export function App() {
   const renderIndividualResult = () => {
     if (!selectedMatchId) {
       return (
-        <Paper elevation={2} sx={{ p: 4, textAlign: 'center' }}>
+        <Paper elevation={2} sx={{ p: 4, textAlign: "center" }}>
           <Typography variant="h6">Nenhum match selecionado</Typography>
           <Typography color="text.secondary" mt={1}>
             Calcule um match ou selecione um candidato na lista para visualizar detalhes.
@@ -252,7 +252,7 @@ export function App() {
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <Grid container spacing={4} alignItems="stretch">
         <Grid item xs={12} md={5} lg={4}>
-          <Stack spacing={2} sx={{ height: '100%' }}>
+          <Stack spacing={2} sx={{ height: "100%" }}>
             <MatchForm
               isSubmitting={isSubmittingMatch}
               onSubmit={handleMatchSubmit}
@@ -276,9 +276,9 @@ export function App() {
                         try {
                           const backendStatus = await fetchBackendStatus();
                           setStatus(backendStatus);
-                          setInfoMessage('Status atualizado.');
+                          setInfoMessage("Status atualizado.");
                         } catch (error) {
-                          setErrorMessage((error as Error).message ?? 'Falha ao atualizar status.');
+                          setErrorMessage((error as Error).message ?? "Falha ao atualizar status.");
                         }
                       }}
                     >
@@ -291,14 +291,14 @@ export function App() {
           </Stack>
         </Grid>
         <Grid item xs={12} md={7} lg={8}>
-          <Stack spacing={2} sx={{ height: '100%' }}>
+          <Stack spacing={2} sx={{ height: "100%" }}>
             {status && !status.ai.openaiConfigured && (
               <Alert severity="info">
                 A chave da OpenAI não está configurada. Utilizando análise heurística para gerar os resultados.
               </Alert>
             )}
 
-            <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={{ sm: 'center' }} spacing={2}>
+            <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ sm: "center" }} spacing={2}>
               <Typography variant="h5" component="h2">
                 Resultados
               </Typography>
@@ -322,7 +322,7 @@ export function App() {
               <Box display="flex" alignItems="center" justifyContent="center" flexGrow={1}>
                 <CircularProgress />
               </Box>
-            ) : viewMode === 'comparison' ? (
+            ) : viewMode === "comparison" ? (
               renderComparisonTable()
             ) : (
               renderIndividualResult()
@@ -331,22 +331,14 @@ export function App() {
         </Grid>
       </Grid>
 
-      <Snackbar
-        open={Boolean(errorMessage)}
-        autoHideDuration={6000}
-        onClose={() => setErrorMessage(null)}
-      >
-        <Alert onClose={() => setErrorMessage(null)} severity="error" sx={{ width: '100%' }}>
+      <Snackbar open={Boolean(errorMessage)} autoHideDuration={6000} onClose={() => setErrorMessage(null)}>
+        <Alert onClose={() => setErrorMessage(null)} severity="error" sx={{ width: "100%" }}>
           {errorMessage}
         </Alert>
       </Snackbar>
 
-      <Snackbar
-        open={Boolean(infoMessage)}
-        autoHideDuration={4000}
-        onClose={() => setInfoMessage(null)}
-      >
-        <Alert onClose={() => setInfoMessage(null)} severity="success" sx={{ width: '100%' }}>
+      <Snackbar open={Boolean(infoMessage)} autoHideDuration={4000} onClose={() => setInfoMessage(null)}>
+        <Alert onClose={() => setInfoMessage(null)} severity="success" sx={{ width: "100%" }}>
           {infoMessage}
         </Alert>
       </Snackbar>

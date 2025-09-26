@@ -1,6 +1,6 @@
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import Grid from '@mui/material/GridLegacy';
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import {
   Box,
   Card,
@@ -15,12 +15,12 @@ import {
   ListItemText,
   Stack,
   Typography,
-} from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+} from "@mui/material";
+import Grid from "@mui/material/GridLegacy";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 
-import type { MatchResult } from '../lib/api';
+import type { MatchResult } from "../lib/api";
 
 dayjs.extend(relativeTime);
 
@@ -29,20 +29,18 @@ type MatchResultCardProps = {
 };
 
 export function MatchResultCard({ result }: MatchResultCardProps) {
-  const createdAtLabel = dayjs(result.createdAt).isValid()
-    ? dayjs(result.createdAt).fromNow()
-    : null;
+  const createdAtLabel = dayjs(result.createdAt).isValid() ? dayjs(result.createdAt).fromNow() : null;
 
-  const scoreColor = result.overallScore >= 80 ? 'success' : result.overallScore >= 60 ? 'warning' : 'error';
+  const scoreColor = result.overallScore >= 80 ? "success" : result.overallScore >= 60 ? "warning" : "error";
 
   return (
-    <Card elevation={3} sx={{ height: '100%' }}>
+    <Card elevation={3} sx={{ height: "100%" }}>
       <CardHeader
         title={result.candidateName ?? `Candidato ${result.candidateId}`}
         subheader={
           <Stack direction="row" spacing={1} alignItems="center">
             <Typography variant="body2" color="text.secondary">
-              {result.job?.title ?? 'Vaga analisada'}
+              {result.job?.title ?? "Vaga analisada"}
             </Typography>
             {result.job?.company?.name && (
               <Typography variant="body2" color="text.secondary">
@@ -56,7 +54,7 @@ export function MatchResultCard({ result }: MatchResultCardProps) {
             )}
           </Stack>
         }
-        action={<Chip label={result.analysisSource === 'openai' ? 'OpenAI' : 'Heurístico'} color="default" />}
+        action={<Chip label={result.analysisSource === "openai" ? "OpenAI" : "Heurístico"} color="default" />}
       />
       <CardContent>
         <Stack spacing={3}>
@@ -133,9 +131,7 @@ export function MatchResultCard({ result }: MatchResultCardProps) {
                 Skills aderentes
               </Typography>
               <Stack direction="row" flexWrap="wrap" gap={1}>
-                {result.matchedSkills.length === 0 && (
-                  <Chip label="Sem correspondências" variant="outlined" />
-                )}
+                {result.matchedSkills.length === 0 && <Chip label="Sem correspondências" variant="outlined" />}
                 {result.matchedSkills.map((skill) => (
                   <Chip key={skill} label={skill} color="success" variant="outlined" />
                 ))}
@@ -146,9 +142,7 @@ export function MatchResultCard({ result }: MatchResultCardProps) {
                 Skills faltantes
               </Typography>
               <Stack direction="row" flexWrap="wrap" gap={1}>
-                {result.missingSkills.length === 0 && (
-                  <Chip label="Nenhuma lacuna" variant="outlined" />
-                )}
+                {result.missingSkills.length === 0 && <Chip label="Nenhuma lacuna" variant="outlined" />}
                 {result.missingSkills.map((skill) => (
                   <Chip key={skill} label={skill} color="warning" variant="outlined" />
                 ))}

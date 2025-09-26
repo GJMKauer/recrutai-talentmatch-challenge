@@ -96,8 +96,6 @@ cp backend/.env.example backend/.env
 
 Configure `OPENAI_API_KEY` para habilitar a análise usando o modelo informado em `OPENAI_MATCH_MODEL`. Quando ausente, o serviço passa automaticamente para o modo heurístico.
 
-`PRESET_RESUME_DIR` pode ser ajustado caso os currículos de exemplo sejam movidos.
-
 ## Scripts Principais
 
 | Comando                     | Descrição |

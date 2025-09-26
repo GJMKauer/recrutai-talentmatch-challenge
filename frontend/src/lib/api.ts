@@ -31,7 +31,7 @@ export type MatchSummary = {
   candidateName?: string;
   jobId: string;
   overallScore: number;
-  analysisSource: 'openai' | 'fallback';
+  analysisSource: "openai" | "fallback";
   createdAt: string;
 };
 
@@ -53,10 +53,10 @@ export type MatchRequest = {
     id?: string;
     name?: string;
   };
-  source?: 'upload' | 'preset' | 'manual';
+  source?: "upload" | "preset" | "manual";
 };
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api';
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -77,7 +77,7 @@ async function extractErrorMessage(response: Response): Promise<string> {
     // ignore parse errors and fallback to status text
   }
 
-  return response.statusText || 'Unexpected API error';
+  return response.statusText || "Unexpected API error";
 }
 
 export async function fetchPresetResumes(signal?: AbortSignal): Promise<PresetResume[]> {
@@ -94,9 +94,9 @@ export async function fetchBackendStatus(signal?: AbortSignal): Promise<{
 
 export async function createMatch(payload: MatchRequest, signal?: AbortSignal): Promise<MatchSummary> {
   const response = await fetch(`${API_BASE}/match`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
     signal,
