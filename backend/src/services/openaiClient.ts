@@ -13,6 +13,16 @@ const matchAnalysisSchema = z.object({
   suggestedQuestions: z.array(z.string()).optional(),
 });
 
+const openAiSchema = {
+  gaps: "string[]",
+  insights: "string",
+  matchedSkills: "string[]",
+  missingSkills: "string[]",
+  overallScore: "number 0-100",
+  strengths: "string[]",
+  suggestedQuestions: "string[]",
+};
+
 export type MatchAnalysis = z.infer<typeof matchAnalysisSchema>;
 
 const openAiApiKey = process.env.OPENAI_API_KEY;
@@ -29,11 +39,7 @@ type Logger = Pick<FastifyBaseLogger, "info" | "warn" | "error">;
 type AnalysisResult = {
   analysis: MatchAnalysis;
   source: "fallback" | "openai";
-  usage?: {
-    completionTokens?: number;
-    promptTokens?: number;
-    totalTokens?: number;
-  };
+  usage?: { completionTokens?: number; promptTokens?: number; totalTokens?: number };
 };
 
 export const analyzeMatch = async ({
@@ -52,13 +58,18 @@ export const analyzeMatch = async ({
   }
 
   const startedAt = Date.now();
+
   try {
     const response = await openAiClient.responses.create({
       input: [
         {
           content: [
             {
-              text: 'Você é um avaliador de vagas. Compare o currículo com a vaga e responda exclusivamente com JSON seguindo o formato: {"overallScore": number 0-100, "matchedSkills": string[], "missingSkills": string[], "insights": string, "strengths": string[], "gaps": string[], "suggestedQuestions": string[]}.',
+              text: [
+                "Você é um avaliador de vagas.",
+                "Compare o currículo com a vaga e responda exclusivamente com JSON seguindo o formato:",
+                JSON.stringify(openAiSchema, null, 2),
+              ].join("\n"),
               type: "input_text",
             },
           ],

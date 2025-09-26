@@ -75,7 +75,6 @@ export function App() {
     }
 
     setIsLoadingDetails(true);
-
     try {
       const detail = await fetchMatchReport(matchId);
 
@@ -84,7 +83,6 @@ export function App() {
         matchDetailsRef.current = next;
         return next;
       });
-
       return detail;
     } catch (error) {
       setErrorMessage((error as Error).message ?? "Não foi possível carregar o relatório.");
@@ -97,17 +95,14 @@ export function App() {
   const fetchInitialData = useCallback(async () => {
     try {
       const controller = new AbortController();
-
       const [resumes, backendStatus, summaries] = await Promise.all([
         fetchPresetResumes(controller.signal),
         fetchBackendStatus(controller.signal).catch(() => ({ ai: { openaiConfigured: false } })),
         fetchMatchSummaries(controller.signal).catch(() => []),
       ]);
-
       setPresetResumes(resumes);
       setStatus(backendStatus);
       setMatches(summaries);
-
       if (summaries.length > 0) {
         const firstMatch = summaries[0];
         setSelectedMatchId(firstMatch.id);
@@ -128,7 +123,6 @@ export function App() {
     if (!selectedMatchId || matchDetails[selectedMatchId]) {
       return;
     }
-
     loadMatchDetail(selectedMatchId).catch(() => {
       /* erro já tratado */
     });
@@ -136,7 +130,6 @@ export function App() {
 
   const handleMatchSubmit = async (payload: MatchRequest) => {
     setIsSubmittingMatch(true);
-
     try {
       const summary = await createMatch(payload);
       setInfoMessage("Match calculado com sucesso.");
@@ -166,7 +159,7 @@ export function App() {
     } catch (error) {
       setErrorMessage((error as Error).message ?? "Falha ao atualizar os resultados.");
     }
-  }
+  };
 
   const handleViewModeChange = (_: unknown, nextValue: ViewMode | null) => {
     if (nextValue) {

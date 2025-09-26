@@ -41,8 +41,8 @@ export type MatchSummary = Pick<
 export const buildMatchSummary = (result: MatchResult): MatchSummary => {
   const { analysisSource, candidateId, candidateName, createdAt, id, jobId, overallScore } = result;
   return { analysisSource, candidateId, candidateName, createdAt, id, jobId, overallScore };
-}
+};
 
 export const parseJob = (input: unknown): Job => {
   return JobSchema.parse(input);
-}
+};

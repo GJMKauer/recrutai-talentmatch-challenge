@@ -51,7 +51,7 @@ const handleResponse = async <T>(response: Response): Promise<T> => {
   }
 
   return (await response.json()) as T;
-}
+};
 
 const extractErrorMessage = async (response: Response): Promise<string> => {
   try {
@@ -64,21 +64,23 @@ const extractErrorMessage = async (response: Response): Promise<string> => {
   }
 
   return response.statusText || "Unexpected API error";
-}
+};
 
 export const fetchPresetResumes = async (signal?: AbortSignal): Promise<Array<PresetResume>> => {
   const response = await fetch(`/api/presets/resumes`, { signal });
 
   return handleResponse<Array<PresetResume>>(response);
-}
+};
 
-export const fetchBackendStatus = async (signal?: AbortSignal): Promise<{
+export const fetchBackendStatus = async (
+  signal?: AbortSignal
+): Promise<{
   ai: { openaiConfigured: boolean };
 }> => {
   const response = await fetch(`/api/status`, { signal });
 
   return handleResponse(response);
-}
+};
 
 export const createMatch = async (payload: MatchRequest, signal?: AbortSignal): Promise<MatchSummary> => {
   const response = await fetch(`/api/match`, {
@@ -89,16 +91,16 @@ export const createMatch = async (payload: MatchRequest, signal?: AbortSignal): 
   });
 
   return handleResponse<MatchSummary>(response);
-}
+};
 
 export const fetchMatchSummaries = async (signal?: AbortSignal): Promise<Array<MatchSummary>> => {
   const response = await fetch(`/api/match`, { signal });
 
   return handleResponse<Array<MatchSummary>>(response);
-}
+};
 
 export const fetchMatchReport = async (id: string, signal?: AbortSignal): Promise<MatchResult> => {
   const response = await fetch(`/api/match/report/${id}`, { signal });
 
   return handleResponse<MatchResult>(response);
-}
+};

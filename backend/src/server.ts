@@ -20,7 +20,7 @@ export const buildServer = async () => {
   await app.register(registerMatchRoutes);
 
   return app;
-}
+};
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const app = await buildServer();

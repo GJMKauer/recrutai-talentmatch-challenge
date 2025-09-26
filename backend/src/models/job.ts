@@ -42,7 +42,7 @@ export const extractRequirementStrings = (requirement?: RequirementItem): string
   }
 
   return `${requirement.language} (${requirement.level})`;
-}
+};
 
 export const extractJobKeywords = (job: Job): Array<string> => {
   const baseKeywords = new Set<string>();
@@ -77,4 +77,4 @@ export const extractJobKeywords = (job: Job): Array<string> => {
   }
 
   return Array.from(baseKeywords);
-}
+};

@@ -1,24 +1,13 @@
 module.exports = {
   env: { browser: true, es2020: true },
-  extends: [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react-hooks/recommended",
-  ],
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:react-hooks/recommended"],
   globals: {
     module: "readonly",
     require: "readonly",
   },
   ignorePatterns: ["dist", ".eslintrc.cjs"],
   parser: "@typescript-eslint/parser",
-  plugins: [
-    "@typescript-eslint",
-    "custom-rules",
-    "import",
-    "perfectionist",
-    "sort-destructure-keys",
-    "sort-keys-plus",
-  ],
+  plugins: ["@typescript-eslint", "custom-rules", "import", "perfectionist", "sort-destructure-keys", "sort-keys-plus"],
   root: true,
   rules: {
     "@typescript-eslint/member-ordering": [

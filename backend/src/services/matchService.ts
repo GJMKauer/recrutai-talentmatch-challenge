@@ -15,11 +15,11 @@ let analyzer = analyzeMatch;
 
 export const setMatchAnalyzer = (override: typeof analyzeMatch): void => {
   analyzer = override;
-}
+};
 
 export const resetMatchAnalyzer = (): void => {
   analyzer = analyzeMatch;
-}
+};
 
 export const createMatch = async ({
   logger,
@@ -85,20 +85,20 @@ export const createMatch = async ({
     result,
     summary: buildMatchSummary(result),
   };
-}
+};
 
 export const getMatchReport = (id: string): MatchResult | null => {
   return matchStore.get(id) ?? null;
-}
+};
 
 export const listMatchSummaries = (): Array<MatchSummary> => {
   return Array.from(matchStore.values())
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .map(buildMatchSummary);
-}
+};
 
 export const clearStore = (): void => {
   matchStore.clear();
-}
+};
 
 resetMatchAnalyzer();

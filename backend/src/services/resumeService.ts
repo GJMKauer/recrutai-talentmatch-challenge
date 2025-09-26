@@ -12,7 +12,7 @@ let cachedResumes: Array<PresetResume> | null = null;
 
 const getResumeDirectory = (): string => {
   return path.resolve(process.cwd(), "..", "mocks", "cvs");
-}
+};
 
 const loadResumes = async (): Promise<Array<PresetResume>> => {
   if (cachedResumes) {
@@ -42,14 +42,14 @@ const loadResumes = async (): Promise<Array<PresetResume>> => {
 
   cachedResumes = resumes;
   return resumes;
-}
+};
 
 export const getPresetResumes = async (): Promise<Array<PresetResume>> => {
   const resumes = await loadResumes();
   return resumes.map((resume) => ({ ...resume }));
-}
+};
 
 export const getPresetResume = async (id: string): Promise<PresetResume | null> => {
   const resumes = await loadResumes();
   return resumes.find((resume) => resume.id === id) ?? null;
-}
+};
