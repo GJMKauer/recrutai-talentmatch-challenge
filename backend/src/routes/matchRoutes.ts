@@ -4,6 +4,9 @@ import { createMatchHandler, getMatchReportHandler, listMatchesHandler } from ".
 import { listPresetResumesHandler } from "../controllers/resumeController.js";
 import { isOpenAIEnabled } from "../services/openaiClient.js";
 
+/** Registra as rotas da API relacionadas à análise de compatibilidade, vagas e currículos.
+ * @param app - A instância do Fastify na qual as rotas serão registradas.
+ */
 export const registerMatchRoutes = async (app: FastifyInstance) => {
   app.post("/api/match", createMatchHandler);
   app.get("/api/match", listMatchesHandler);

@@ -11,6 +11,7 @@ import {
   setMatchAnalyzer,
 } from "../dist/services/matchService.js";
 
+/** Cria um espião para capturar chamadas de função */
 const createSpy = () => {
   const spy = (...args) => {
     spy.calls.push(args);
@@ -21,6 +22,7 @@ const createSpy = () => {
   return spy;
 };
 
+/** Cria um logger falso que captura chamadas de log */
 const createLogger = () => {
   const info = createSpy();
   const warn = createSpy();
@@ -40,6 +42,7 @@ const createLogger = () => {
   return base;
 };
 
+/** Carrega um currículo de teste em Markdown */
 const loadResumeMarkdown = (filename) => {
   const baseDir = path.resolve(process.cwd(), "..", "mocks", "cvs");
   const filePath = path.join(baseDir, filename);
@@ -47,6 +50,7 @@ const loadResumeMarkdown = (filename) => {
   return readFileSync(filePath, "utf-8");
 };
 
+/** Carrega uma descrição de vaga de teste */
 const loadJobFixture = () => {
   const jobPath = path.resolve(process.cwd(), "..", "mocks", "jobs", "jobdesc_eng_fullstack.json");
 

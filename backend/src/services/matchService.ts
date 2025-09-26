@@ -19,14 +19,26 @@ const matchStore = new Map<string, MatchResult>();
 
 let analyzer = analyzeMatch;
 
+/** Define uma função personalizada para análise de compatibilidade.
+ * Útil para testes ou para substituir o comportamento padrão.
+ * @param override - A função que substituirá a função de análise padrão.
+ */
 export const setMatchAnalyzer = (override: typeof analyzeMatch): void => {
   analyzer = override;
 };
 
+/** Restaura a função de análise de compatibilidade para a implementação padrão. */
 export const resetMatchAnalyzer = (): void => {
   analyzer = analyzeMatch;
 };
 
+/** Cria uma nova análise de compatibilidade com base na carga útil fornecida.
+ * Valida a carga útil, executa a análise e armazena o resultado em memória.
+ * @param params - Um objeto contendo o logger e a carga útil da análise.
+ * @returns Um objeto contendo o resultado completo da análise e um resumo.
+ * @throws Um erro Zod se a validação da carga útil falhar.
+ * @throws Outros erros podem ser lançados durante a análise ou armazenamento do resultado.
+ */
 export const createMatch = async (
   params: CreateMatchParams
 ): Promise<{ result: MatchResult; summary: MatchSummary }> => {
@@ -86,16 +98,25 @@ export const createMatch = async (
   };
 };
 
+/** Recupera o relatório completo de uma análise de compatibilidade pelo ID.
+ * @param id - O ID da análise de compatibilidade a ser recuperada.
+ * @returns O resultado completo da análise ou null se não for encontrado.
+ */
 export const getMatchReport = (id: string): MatchResult | null => {
   return matchStore.get(id) ?? null;
 };
 
+/** Lista os resumos de todas as análises de compatibilidade armazenadas em memória.
+ * Os resumos são ordenados por data de criação, do mais recente ao mais antigo.
+ * @returns Um array de resumos de análises de compatibilidade.
+ */
 export const listMatchSummaries = (): Array<MatchSummary> => {
   return Array.from(matchStore.values())
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .map(buildMatchSummary);
 };
 
+/** Limpa todas as análises de compatibilidade armazenadas em memória. */
 export const clearStore = (): void => {
   matchStore.clear();
 };

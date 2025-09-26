@@ -6,6 +6,7 @@ import { registerMatchRoutes } from "./routes/matchRoutes.js";
 const PORT = Number(process.env.PORT ?? 3333);
 const HOST = process.env.HOST ?? "0.0.0.0";
 
+/** Constrói e configura a instância do servidor Fastify. */
 export const buildServer = async () => {
   const app = Fastify({
     logger: {

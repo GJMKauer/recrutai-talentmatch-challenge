@@ -38,6 +38,10 @@ import {
 type ViewMode = "comparison" | "individual";
 type MatchDetailDictionary = Record<string, MatchResult>;
 
+/** Componente principal da aplicação que gerencia o estado e a lógica para analisar a compatibilidade entre um currículo e uma vaga de emprego.
+ * Inclui o formulário de análise, exibição de resultados individuais ou comparativos, e gerenciamento de mensagens de erro e status.
+ * @returns Um componente React que renderiza a aplicação de análise de compatibilidade.
+ */
 export function App() {
   const matchDetailsRef = useRef<MatchDetailDictionary>({});
 

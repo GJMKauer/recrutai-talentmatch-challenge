@@ -5,6 +5,7 @@ import { extractJobKeywords, type Job } from "../models/job.js";
 import { extractJson } from "../utils/json.js";
 import { systemPrompt } from "../utils/openAiPrompts.js";
 
+/** Esquema Zod para validar a estrutura da análise de compatibilidade retornada pela OpenAI ou gerada heurísticamente. */
 const matchAnalysisSchema = z.object({
   gaps: z.array(z.string()).default([]),
   insights: z.string().default(""),
@@ -36,10 +37,18 @@ const openAiModel = process.env.OPENAI_MATCH_MODEL ?? "gpt-4o-mini";
 
 const openAiClient = openAiApiKey ? new OpenAI({ apiKey: openAiApiKey }) : null;
 
+/** Verifica se a integração com a OpenAI está habilitada. */
 export const isOpenAIEnabled = (): boolean => {
   return Boolean(openAiClient);
 };
 
+/** Cria uma nova análise de compatibilidade com base na carga útil fornecida.
+ * Valida a carga útil, executa a análise e armazena o resultado em memória.
+ * @param params - Um objeto contendo o logger e a carga útil da análise.
+ * @returns Um objeto contendo o resultado completo da análise e um resumo.
+ * @throws Um erro Zod se a validação da carga útil falhar.
+ * @throws Outros erros podem ser lançados durante a análise ou armazenamento do resultado.
+ */
 export const analyzeMatch = async (params: AnalyzeMatchParams): Promise<AnalysisResult> => {
   const { job, logger, resumeMarkdown } = params;
 
@@ -119,6 +128,12 @@ export const analyzeMatch = async (params: AnalyzeMatchParams): Promise<Analysis
   }
 };
 
+/** Computa uma análise heurística de compatibilidade entre a vaga e o currículo.
+ * Utiliza correspondência simples de palavras-chave e regras baseadas em expressões regulares.
+ * @param job - O objeto Job contendo os detalhes da vaga.
+ * @param resumeMarkdown - O currículo do candidato em formato Markdown.
+ * @returns Um objeto MatchAnalysis contendo os resultados da análise.
+ */
 const computeFallbackAnalysis = (job: Job, resumeMarkdown: string): MatchAnalysis => {
   const normalizedResume = resumeMarkdown.toLowerCase();
   const keywords = extractJobKeywords(job);

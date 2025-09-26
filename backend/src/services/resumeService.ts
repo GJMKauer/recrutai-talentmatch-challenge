@@ -10,10 +10,16 @@ export interface PresetResume {
 
 let cachedResumes: Array<PresetResume> | null = null;
 
+/** Obtém o caminho absoluto para o diretório que contém os currículos predefinidos. */
 const getResumeDirectory = (): string => {
   return path.resolve(process.cwd(), "..", "mocks", "cvs");
 };
 
+/** Carrega e retorna todos os currículos predefinidos do diretório.
+ * Utiliza cache para evitar leituras repetidas do diretório.
+ * @returns Um array de currículos predefinidos.
+ * @throws Um erro se a leitura do diretório ou dos arquivos falhar.
+ */
 const loadResumes = async (): Promise<Array<PresetResume>> => {
   if (cachedResumes) {
     return cachedResumes;
@@ -44,11 +50,20 @@ const loadResumes = async (): Promise<Array<PresetResume>> => {
   return resumes;
 };
 
+/** Recupera todos os currículos predefinidos.
+ * @returns Um array de currículos predefinidos.
+ * @throws Um erro se a leitura dos arquivos falhar.
+ */
 export const getPresetResumes = async (): Promise<Array<PresetResume>> => {
   const resumes = await loadResumes();
   return resumes.map((resume) => ({ ...resume }));
 };
 
+/** Recupera um currículo predefinido pelo ID.
+ * @param id - O ID do currículo a ser recuperado.
+ * @returns O currículo correspondente ou null se não for encontrado.
+ * @throws Um erro se a leitura dos arquivos falhar.
+ */
 export const getPresetResume = async (id: string): Promise<PresetResume | null> => {
   const resumes = await loadResumes();
   return resumes.find((resume) => resume.id === id) ?? null;

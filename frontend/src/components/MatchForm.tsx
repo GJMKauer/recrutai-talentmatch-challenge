@@ -33,6 +33,16 @@ type FormErrors = {
   resume?: string;
 };
 
+/** Componente que exibe um formulário para analisar a compatibilidade entre uma vaga de emprego e um currículo em Markdown.
+ * Permite carregar um currículo de arquivo, selecionar um currículo predefinido ou inserir manualmente o texto.
+ * Valida a entrada e chama a função de submissão com os dados apropriados.
+ * @param isSubmitting - Indica se o formulário está em processo de submissão.
+ * @param job - O objeto Job contendo os detalhes da vaga a ser analisada.
+ * @param onSubmit - Função chamada ao submeter o formulário, recebendo o payload da análise.
+ * @param presetResumes - Um array de currículos predefinidos disponíveis para seleção.
+ * @param resetKey - Uma chave opcional que, quando alterada, reseta o estado do formulário.
+ * @returns Um componente React que renderiza o formulário de análise de compatibilidade.
+ */
 export function MatchForm(props: MatchFormProps) {
   const { isSubmitting, job, onSubmit, presetResumes, resetKey } = props;
 

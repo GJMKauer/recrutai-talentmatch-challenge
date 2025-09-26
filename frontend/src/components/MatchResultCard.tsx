@@ -27,6 +27,11 @@ type MatchResultCardProps = {
   result: MatchResult;
 };
 
+/** Componente que exibe os detalhes de uma análise de compatibilidade (match) entre um currículo e uma vaga de emprego.
+ * Inclui pontuação geral, insights, forças, lacunas, skills aderentes e faltantes, e sugestões de perguntas para entrevista.
+ * @param result - O objeto MatchResult contendo os detalhes da análise.
+ * @returns Um componente React que renderiza os detalhes da análise de compatibilidade.
+ */
 export function MatchResultCard(props: MatchResultCardProps) {
   const { result } = props;
 
@@ -62,7 +67,7 @@ export function MatchResultCard(props: MatchResultCardProps) {
             ) : null}
           </Stack>
         }
-        title={result.candidateName ?? `Candidato ${result.candidateId}`}
+        title={`Candidato ${result.candidateId}`}
       />
       <CardContent>
         <Stack spacing={3}>

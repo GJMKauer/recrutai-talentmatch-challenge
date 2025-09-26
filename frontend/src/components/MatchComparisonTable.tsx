@@ -19,6 +19,14 @@ type MatchComparisonTableProps = {
   selectedMatchId: null | string;
 };
 
+/** Componente que exibe uma tabela comparativa de análises de compatibilidade (matches).
+ * Destaca o candidato com a melhor pontuação e permite selecionar uma análise para ver detalhes.
+ * @param bestScore - A melhor pontuação entre os candidatos.
+ * @param matches - Um array de resumos das análises de compatibilidade.
+ * @param onSelectMatch - Função chamada ao selecionar uma análise, recebendo o ID da análise.
+ * @param selectedMatchId - O ID da análise atualmente selecionada, ou null se nenhuma estiver selecionada.
+ * @returns Um componente React que renderiza a tabela comparativa.
+ */
 export function MatchComparisonTable(props: MatchComparisonTableProps) {
   const { bestScore, matches, onSelectMatch, selectedMatchId } = props;
 

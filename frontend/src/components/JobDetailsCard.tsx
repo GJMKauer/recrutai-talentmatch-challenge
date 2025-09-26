@@ -21,6 +21,12 @@ type JobDetailsCardProps = {
   job: Job;
 };
 
+/** Componente que exibe os detalhes de uma vaga de emprego em um cartão.
+ * Inclui título, empresa, localização, nível de senioridade, descrição,
+ * responsabilidades e requisitos obrigatórios e desejáveis.
+ * @param job - O objeto Job contendo os detalhes da vaga.
+ * @returns Um componente React que renderiza os detalhes da vaga.
+ */
 export function JobDetailsCard(props: JobDetailsCardProps) {
   const { job } = props;
 

@@ -97,3 +97,16 @@ Os testes trocam o analisador da service (`setMatchAnalyzer`) para simular respo
 3. Cache para reutilizar resultados de matches repetidos.
 4. Evoluir ferramentas de leitura para permitir imagens e/ou PDFs (extração de conteúdo textual para a leitura).
 5. Aprimoramentos e refinamentos no prompt/treinamento da IA para uma validação mais precisa.
+
+
+---
+
+## Decisões Técnicas e trade-offs
+TODO.
+
+
+## IA DevTools
+- Codex
+- GPT
+- Copilot
+- Lovable

@@ -3,6 +3,12 @@ import { ZodError } from "zod";
 import type { MatchRequestPayload } from "../models/match.js";
 import { createMatch, getMatchReport, listMatchSummaries } from "../services/matchService.js";
 
+/**
+ * Handler para criar uma nova análise de compatibilidade.
+ * @param request - Objeto de requisição do Fastify contendo o payload da análise.
+ * @param reply - Objeto de resposta do Fastify.
+ * @returns O resumo da análise criada ou um erro apropriado em caso de falha.
+ */
 export const createMatchHandler = async (
   request: FastifyRequest<{ Body: MatchRequestPayload }>,
   reply: FastifyReply
