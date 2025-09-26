@@ -57,7 +57,7 @@ export const createMatch = async (
     ? (() => {
         logger.warn(
           { candidateId, jobId: job.id, matchId },
-          "Resume payload appears invalid. Using safe fallback analysis",
+          "Resume payload appears invalid. Using safe fallback analysis"
         );
         return {
           analysis: { ...invalidAnalysisResponse },
