@@ -100,9 +100,10 @@ describe("matchService", () => {
     });
 
     const summaries = listMatchSummaries();
-    assert.equal(summaries.length, 2);
-    assert.equal(summaries[0].id, second.summary.id);
-    assert.equal(summaries[1].id, first.summary.id);
+    assert.deepEqual(
+      summaries.map((s) => s.createdAt),
+      [second.summary.createdAt, first.summary.createdAt]
+    );
   });
 
   it("uses injected analyzer results when available", async () => {

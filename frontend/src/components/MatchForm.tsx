@@ -170,16 +170,11 @@ export function MatchForm(props: MatchFormProps) {
           aria-label="Currículo em Markdown"
           error={Boolean(errors.resume)}
           helperText={errors.resume}
-          minRows={5}
           multiline
           onChange={handleChange}
           placeholder="Cole aqui o conteúdo do currículo em Markdown (ou selecione/carregue um arquivo acima)"
-          sx={{
-            "& .MuiInputBase-input": {
-              maxHeight: "240px",
-              overflowY: "auto",
-            },
-          }}
+          rows={7}
+          sx={{ "& textarea": { maxHeight: 240, overflowY: "auto" } }}
           value={resumeText}
         />
       </Stack>
