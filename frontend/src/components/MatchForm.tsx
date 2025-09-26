@@ -1,5 +1,7 @@
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import InfoIcon from "@mui/icons-material/Info";
 import {
+  Alert,
   Box,
   Button,
   FormControl,
@@ -7,17 +9,20 @@ import {
   MenuItem,
   Paper,
   Select,
+  Skeleton,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import type { MatchRequest, PresetResume } from "../lib/api";
+import type { Job, MatchRequest, PresetResume } from "../lib/api";
 import { readFile } from "../utils/fileReader";
+import { JobDetailsCard } from "./JobDetailsCard";
 
 type MatchFormProps = {
   isSubmitting: boolean;
+  job?: Job | null;
   onSubmit: (payload: MatchRequest) => Promise<void> | void;
   presetResumes: Array<PresetResume>;
   resetKey?: number;
@@ -28,32 +33,26 @@ type FormErrors = {
   resume?: string;
 };
 
-const initialState = {
-  jobText: "",
-  resumeText: "",
-};
-
 export function MatchForm(props: MatchFormProps) {
-  const { isSubmitting, onSubmit, presetResumes, resetKey } = props;
+  const { isSubmitting, job, onSubmit, presetResumes, resetKey } = props;
 
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [formState, setFormState] = useState(initialState);
+  const [resumeText, setResumeText] = useState("");
   const [selectedPreset, setSelectedPreset] = useState<string>("");
+  const [errors, setErrors] = useState<FormErrors>({});
 
   useEffect(() => {
-    setFormState(initialState);
+    setResumeText("");
     setSelectedPreset("");
     setErrors({});
-  }, [resetKey]);
+  }, [resetKey, job?.id]);
 
-  const handleChange =
-    (field: keyof typeof initialState) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setFormState((prev) => ({ ...prev, [field]: event.target.value }));
-    };
+  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setResumeText(event.target.value);
+  };
 
   const loadResumeFromFile = async (file: File) => {
     const content = await readFile(file);
-    setFormState((prev) => ({ ...prev, resumeText: content }));
+    setResumeText(content);
   };
 
   const handlePresetSelection = (event: SelectChangeEvent<string>) => {
@@ -61,37 +60,28 @@ export function MatchForm(props: MatchFormProps) {
     setSelectedPreset(presetId);
 
     if (!presetId) {
+      setResumeText("");
       return;
     }
 
     const preset = presetResumes.find((item) => item.id === presetId);
     if (preset) {
-      setFormState((prev) => ({ ...prev, resumeText: preset.markdown }));
+      setResumeText(preset.markdown);
     }
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const trimmedResume = formState.resumeText.trim();
+    const trimmedResume = resumeText.trim();
     const nextErrors: FormErrors = {};
 
-    if (!formState.jobText.trim()) {
-      nextErrors.job = "Informe a vaga em formato JSON.";
+    if (!job) {
+      nextErrors.job = "Não foi possível carregar a vaga. Atualize a página e tente novamente.";
     }
 
     if (!trimmedResume) {
       nextErrors.resume = "Informe o currículo em Markdown.";
-    }
-
-    let jobPayload: unknown;
-
-    if (!nextErrors.job) {
-      try {
-        jobPayload = JSON.parse(formState.jobText);
-      } catch {
-        nextErrors.job = "JSON da vaga inválido.";
-      }
     }
 
     if (Object.keys(nextErrors).length > 0) {
@@ -102,101 +92,103 @@ export function MatchForm(props: MatchFormProps) {
     setErrors({});
 
     await onSubmit({
-      job: jobPayload,
+      job,
       resumeMarkdown: trimmedResume,
       source: selectedPreset ? "preset" : "manual",
     });
   };
 
   return (
-    <Paper component="form" elevation={3} onSubmit={handleSubmit} sx={{ p: 3 }}>
-      <Stack spacing={3}>
-        <Box>
-          <Typography component="h2" gutterBottom variant="h5">
-            Analisar Vaga e Currículo
-          </Typography>
-          <Typography color="text.secondary" variant="body2">
-            Selecione uma das vagas abaixo, o currículo em Markdown ou utilize um currículo pré-definido.
-          </Typography>
-        </Box>
+    <Paper
+      component="form"
+      elevation={3}
+      onSubmit={handleSubmit}
+      sx={{ display: "flex", flexDirection: "column", gap: 3, p: 3 }}
+    >
+      <Box>
+        <Typography component="h2" gutterBottom variant="h5">
+          Analisar Vaga e Currículo
+        </Typography>
+        <Typography color="text.secondary" variant="body2">
+          Visualize a vaga selecionada e forneça o currículo em Markdown para calcular o match.
+        </Typography>
+      </Box>
 
-        <Stack spacing={1}>
-          <Stack alignItems={{ sm: "center" }} direction={{ sm: "row", xs: "column" }} spacing={1}>
-            <Typography variant="subtitle1">Dados da vaga</Typography>
-          </Stack>
-          <TextField
-            aria-label="Vaga em JSON"
-            error={Boolean(errors.job)}
-            helperText={errors.job}
-            minRows={8}
-            multiline
-            onChange={handleChange("jobText")}
-            placeholder="Cole o JSON completo da vaga aqui"
-            value={formState.jobText}
-          />
-        </Stack>
-
-        <Stack spacing={1}>
-          <Stack alignItems={{ sm: "center" }} direction={{ sm: "row", xs: "column" }} spacing={1}>
-            <Typography variant="subtitle1">Currículo em Markdown</Typography>
-            <Button component="label" size="small" startIcon={<CloudUploadIcon />} variant="outlined">
-              Carregar arquivo
-              <input
-                accept="text/markdown,text/plain"
-                hidden
-                onChange={async (event) => {
-                  const file = event.target.files?.[0];
-                  if (file) {
-                    await loadResumeFromFile(file);
-                    setSelectedPreset("");
-                    event.target.value = "";
-                  }
-                }}
-                type="file"
-              />
-            </Button>
-          </Stack>
-
-          {presetResumes.length > 0 ? (
-            <FormControl fullWidth size="small">
-              <InputLabel id="preset-resume-label">Currículos de exemplo</InputLabel>
-              <Select
-                disabled={isSubmitting}
-                label="Currículos de exemplo"
-                labelId="preset-resume-label"
-                onChange={handlePresetSelection}
-                value={selectedPreset}
-              >
-                <MenuItem value="">
-                  <em>Nenhum</em>
-                </MenuItem>
-                {presetResumes.map((resume) => (
-                  <MenuItem key={resume.id} value={resume.id}>
-                    {resume.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          ) : null}
-
-          <TextField
-            aria-label="Currículo em Markdown"
-            error={Boolean(errors.resume)}
-            helperText={errors.resume}
-            minRows={12}
-            multiline
-            onChange={handleChange("resumeText")}
-            placeholder="Cole aqui o conteúdo do currículo em Markdown"
-            value={formState.resumeText}
-          />
-        </Stack>
-
-        <Box display="flex" justifyContent="flex-end">
-          <Button disabled={isSubmitting} size="large" type="submit" variant="contained">
-            {isSubmitting ? "Calculando..." : "Calcular Match"}
-          </Button>
-        </Box>
+      <Stack spacing={1.5}>
+        {!job ? <Skeleton animation="wave" height={200} variant="rounded" /> : <JobDetailsCard job={job} />}
+        {errors.job ? (
+          <Alert icon={<InfoIcon fontSize="small" />} severity="error">
+            {errors.job}
+          </Alert>
+        ) : null}
       </Stack>
+
+      <Stack spacing={1}>
+        <Stack alignItems={{ sm: "center" }} direction={{ sm: "row", xs: "column" }} spacing={1}>
+          <Typography variant="subtitle1">Currículo em Markdown</Typography>
+          <Button component="label" size="small" startIcon={<CloudUploadIcon />} variant="outlined">
+            Carregar arquivo
+            <input
+              accept="text/markdown,text/plain,.md"
+              hidden
+              onChange={async (event) => {
+                const file = event.target.files?.[0];
+                if (file) {
+                  await loadResumeFromFile(file);
+                  setSelectedPreset("");
+                  event.target.value = "";
+                }
+              }}
+              type="file"
+            />
+          </Button>
+        </Stack>
+
+        {presetResumes.length > 0 ? (
+          <FormControl fullWidth size="small">
+            <InputLabel id="preset-resume-label">Currículos de exemplo</InputLabel>
+            <Select
+              disabled={isSubmitting}
+              label="Currículos de exemplo"
+              labelId="preset-resume-label"
+              onChange={handlePresetSelection}
+              value={selectedPreset}
+            >
+              <MenuItem value="">
+                <em>Nenhum</em>
+              </MenuItem>
+              {presetResumes.map((resume) => (
+                <MenuItem key={resume.id} value={resume.id}>
+                  {resume.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        ) : null}
+
+        <TextField
+          aria-label="Currículo em Markdown"
+          error={Boolean(errors.resume)}
+          helperText={errors.resume}
+          minRows={5}
+          multiline
+          onChange={handleChange}
+          placeholder="Cole aqui o conteúdo do currículo em Markdown (ou selecione/carregue um arquivo acima)"
+          sx={{
+            "& .MuiInputBase-input": {
+              maxHeight: "240px",
+              overflowY: "auto",
+            },
+          }}
+          value={resumeText}
+        />
+      </Stack>
+
+      <Box display="flex" justifyContent="flex-end">
+        <Button disabled={isSubmitting || !job} size="large" type="submit" variant="contained">
+          {isSubmitting ? "Calculando..." : "Calcular Match"}
+        </Button>
+      </Box>
     </Paper>
   );
 }

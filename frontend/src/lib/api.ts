@@ -9,12 +9,16 @@ export type Job = {
   company?: { name?: string };
   description?: string;
   id: string;
+  keywords?: Array<string>;
+  location?: { city?: string; country?: string; state?: string; type?: string };
   requirements?: {
     desirable?: Array<{ category: string; items: Array<string | { language: string; level: string }> }>;
     mandatory?: Array<{ category: string; items: Array<string | { language: string; level: string }> }>;
   };
   responsibilities?: Array<string>;
+  seniority_level?: string;
   title?: string;
+  years_of_experience?: { max?: number; min?: number };
 };
 
 export type MatchSummary = {
@@ -39,6 +43,10 @@ export type MatchResult = MatchSummary & {
 };
 
 export type MatchRequest = {
+  candidate?: {
+    id?: string;
+    name?: string;
+  };
   job: unknown;
   resumeMarkdown: string;
   source?: "manual" | "preset" | "upload";
@@ -70,6 +78,12 @@ export const fetchPresetResumes = async (signal?: AbortSignal): Promise<Array<Pr
   const response = await fetch(`/api/presets/resumes`, { signal });
 
   return handleResponse<Array<PresetResume>>(response);
+};
+
+export const fetchDefaultJob = async (signal?: AbortSignal): Promise<Job> => {
+  const response = await fetch(`/api/presets/job`, { signal });
+
+  return handleResponse<Job>(response);
 };
 
 export const fetchBackendStatus = async (

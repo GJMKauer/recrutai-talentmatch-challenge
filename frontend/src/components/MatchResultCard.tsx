@@ -44,7 +44,7 @@ export function MatchResultCard(props: MatchResultCardProps) {
   return (
     <Card elevation={3} sx={{ height: "100%" }}>
       <CardHeader
-        action={<Chip color="default" label={result.analysisSource === "openai" ? "OpenAI" : "Heurístico"} />}
+        action={<Chip color="default" label={result.analysisSource === "openai" ? "OpenAI" : "Heurística"} />}
         subheader={
           <Stack alignItems="center" direction="row" spacing={1}>
             <Typography color="text.secondary" variant="body2">

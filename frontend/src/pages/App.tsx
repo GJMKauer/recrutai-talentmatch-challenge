@@ -4,7 +4,6 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import {
   Alert,
   Box,
-  Button,
   Chip,
   CircularProgress,
   Container,
@@ -12,11 +11,6 @@ import {
   Paper,
   Snackbar,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
@@ -24,14 +18,17 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/GridLegacy";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { MatchComparisonTable } from "../components/MatchComparisonTable";
 import { MatchForm } from "../components/MatchForm";
 import { MatchResultCard } from "../components/MatchResultCard";
 import {
   createMatch,
   fetchBackendStatus,
+  fetchDefaultJob,
   fetchMatchReport,
   fetchMatchSummaries,
   fetchPresetResumes,
+  type Job,
   type MatchRequest,
   type MatchResult,
   type MatchSummary,
@@ -41,7 +38,6 @@ import {
 type ViewMode = "comparison" | "individual";
 type MatchDetailDictionary = Record<string, MatchResult>;
 
-/** Componente principal da aplicação. */
 export function App() {
   const matchDetailsRef = useRef<MatchDetailDictionary>({});
 
@@ -51,6 +47,7 @@ export function App() {
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [isSubmittingMatch, setIsSubmittingMatch] = useState(false);
+  const [job, setJob] = useState<Job | null>(null);
   const [matchDetails, setMatchDetails] = useState<MatchDetailDictionary>({});
   const [matches, setMatches] = useState<Array<MatchSummary>>([]);
   const [presetResumes, setPresetResumes] = useState<Array<PresetResume>>([]);
@@ -68,7 +65,6 @@ export function App() {
     return matches.reduce((max, summary) => Math.max(max, summary.overallScore), 0);
   }, [matches]);
 
-  /** Carrega o relatório detalhado de um match, utilizando cache se disponível. */
   const loadMatchDetail = useCallback(async (matchId: string) => {
     if (matchDetailsRef.current[matchId]) {
       return matchDetailsRef.current[matchId];
@@ -95,14 +91,19 @@ export function App() {
   const fetchInitialData = useCallback(async () => {
     try {
       const controller = new AbortController();
-      const [resumes, backendStatus, summaries] = await Promise.all([
+      const [resumes, backendStatus, summaries, defaultJob] = await Promise.all([
         fetchPresetResumes(controller.signal),
         fetchBackendStatus(controller.signal).catch(() => ({ ai: { openaiConfigured: false } })),
         fetchMatchSummaries(controller.signal).catch(() => []),
+        fetchDefaultJob(controller.signal).catch(() => null),
       ]);
       setPresetResumes(resumes);
       setStatus(backendStatus);
       setMatches(summaries);
+      setJob(defaultJob);
+      if (!defaultJob) {
+        setErrorMessage((prev) => prev ?? "Não foi possível carregar a vaga padrão.");
+      }
       if (summaries.length > 0) {
         const firstMatch = summaries[0];
         setSelectedMatchId(firstMatch.id);
@@ -175,54 +176,6 @@ export function App() {
     });
   };
 
-  const renderComparisonTable = () => (
-    <Paper elevation={3} sx={{ p: 2 }}>
-      <Table aria-label="Comparação de candidatos" size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Candidato</TableCell>
-            <TableCell>ID</TableCell>
-            <TableCell align="right">Score</TableCell>
-            <TableCell>Origem da análise</TableCell>
-            <TableCell>Obtido</TableCell>
-            <TableCell align="right">Ações</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {matches.length === 0 ? (
-            <TableRow>
-              <TableCell align="center" colSpan={6}>
-                Nenhum match calculado ainda.
-              </TableCell>
-            </TableRow>
-          ) : null}
-          {matches.map((summary) => {
-            const isBest = summary.overallScore === bestScore && bestScore > 0;
-            return (
-              <TableRow hover key={summary.id} selected={selectedMatchId === summary.id}>
-                <TableCell>{summary.candidateName ?? "Sem nome"}</TableCell>
-                <TableCell>{summary.candidateId}</TableCell>
-                <TableCell align="right">
-                  <Stack alignItems="center" direction="row" justifyContent="flex-end" spacing={1}>
-                    {isBest ? <Chip color="success" label="Top" size="small" /> : null}
-                    <Typography variant="body1">{summary.overallScore}</Typography>
-                  </Stack>
-                </TableCell>
-                <TableCell>{summary.analysisSource === "openai" ? "OpenAI" : "Heurístico"}</TableCell>
-                <TableCell>{new Date(summary.createdAt).toLocaleString()}</TableCell>
-                <TableCell align="right">
-                  <Button onClick={() => handleSelectMatch(summary.id)} size="small">
-                    Ver detalhes
-                  </Button>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </Paper>
-  );
-
   const renderIndividualResult = () => {
     if (!selectedMatchId) {
       return (
@@ -255,7 +208,14 @@ export function App() {
           </Box>
         );
       case viewMode === "comparison":
-        return renderComparisonTable();
+        return (
+          <MatchComparisonTable
+            bestScore={bestScore}
+            matches={matches}
+            onSelectMatch={handleSelectMatch}
+            selectedMatchId={selectedMatchId}
+          />
+        );
       case viewMode === "individual":
         return renderIndividualResult();
     }
@@ -268,6 +228,7 @@ export function App() {
           <Stack spacing={2} sx={{ height: "100%" }}>
             <MatchForm
               isSubmitting={isSubmittingMatch}
+              job={job}
               onSubmit={handleMatchSubmit}
               presetResumes={presetResumes}
               resetKey={formResetKey}
