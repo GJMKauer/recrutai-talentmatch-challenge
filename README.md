@@ -14,7 +14,7 @@ O projeto entrega um MVP full-stack totalmente em TypeScript dividido em dois pa
 Clone o repositório e instale as dependências a partir da raiz do projeto:
 
 ```bash
-cd ./backend && npm install && cd ../frontend && npm install
+cd ./backend && npm install && cd ../frontend && npm install && cd ..
 ```
 
 ## Variáveis de Ambiente
