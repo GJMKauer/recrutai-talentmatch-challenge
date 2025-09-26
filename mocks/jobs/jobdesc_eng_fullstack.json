@@ -11,7 +11,7 @@
     "city": "São Paulo",
     "state": "SP",
     "country": "Brasil",
-    "type": "Remoto",
+    "type": "Remoto"
   },
   "contract": {
     "type": "CLT",
@@ -36,7 +36,7 @@
   "seniority_level": "Pleno/Senior",
   "years_of_experience": {
     "min": 4,
-    "max": 10,
+    "max": 10
   },
   "description": "Estamos buscando um(a) Engenheiro(a) Full Stack apaixonado(a) por tecnologia para se juntar ao nosso time de Produtos Digitais. Você trabalhará no desenvolvimento de nossa plataforma de banking as a service, criando soluções inovadoras que impactam milhões de usuários.",
   "responsibilities": [

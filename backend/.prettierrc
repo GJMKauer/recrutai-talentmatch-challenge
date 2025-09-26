@@ -1,0 +1,9 @@
+{
+  "bracketSameLine": false,
+  "plugins": ["prettier-plugin-sort-json"],
+  "printWidth": 120,
+  "semi": true,
+  "singleQuote": false,
+  "tabWidth": 2,
+  "trailingComma": "es5"
+}
