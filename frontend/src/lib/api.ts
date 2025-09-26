@@ -24,7 +24,6 @@ export type Job = {
 export type MatchSummary = {
   analysisSource: "fallback" | "openai";
   candidateId: string;
-  candidateName?: string;
   createdAt: string;
   id: string;
   jobId: string;

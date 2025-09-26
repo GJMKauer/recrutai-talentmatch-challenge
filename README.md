@@ -37,7 +37,7 @@ Configure `OPENAI_API_KEY` com uma chave válida para habilitar a análise usand
 | `npm run lint`              | Lint em ambos os pacotes |
 | `npm run test`              | Executa os testes unitários do backend |
 
-## Estrutura de Pastas
+## Estrutura de Pastas (arquivos principais)
 
 ```
 backend/

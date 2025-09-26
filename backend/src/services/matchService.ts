@@ -10,7 +10,13 @@ import {
 } from "../models/match.js";
 import { analyzeMatch } from "./openaiClient.js";
 
+type CreateMatchParams = {
+  logger: FastifyBaseLogger;
+  payload: MatchRequestPayload;
+};
+
 const matchStore = new Map<string, MatchResult>();
+
 let analyzer = analyzeMatch;
 
 export const setMatchAnalyzer = (override: typeof analyzeMatch): void => {
@@ -21,28 +27,21 @@ export const resetMatchAnalyzer = (): void => {
   analyzer = analyzeMatch;
 };
 
-export const createMatch = async ({
-  logger,
-  payload,
-}: {
-  logger: FastifyBaseLogger;
-  payload: MatchRequestPayload;
-}): Promise<{ result: MatchResult; summary: MatchSummary }> => {
+export const createMatch = async (
+  params: CreateMatchParams
+): Promise<{ result: MatchResult; summary: MatchSummary }> => {
+  const { logger, payload } = params;
+
   const data = MatchRequestSchema.parse(payload);
   const job = parseJob(data.job);
   const candidateId = data.candidate?.id ?? uuid();
   const matchId = uuid();
 
-  const analysisResult = await analyzer({
-    job,
-    logger,
-    resumeMarkdown: data.resumeMarkdown,
-  });
+  const analysisResult = await analyzer({ job, logger, resumeMarkdown: data.resumeMarkdown });
 
   const result: MatchResult = {
     analysisSource: analysisResult.source,
     candidateId,
-    candidateName: data.candidate?.name,
     createdAt: new Date().toISOString(),
     gaps: analysisResult.analysis.gaps,
     id: matchId,

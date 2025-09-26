@@ -43,11 +43,13 @@ const createLogger = () => {
 const loadResumeMarkdown = (filename) => {
   const baseDir = path.resolve(process.cwd(), "..", "mocks", "cvs");
   const filePath = path.join(baseDir, filename);
+
   return readFileSync(filePath, "utf-8");
 };
 
 const loadJobFixture = () => {
   const jobPath = path.resolve(process.cwd(), "..", "mocks", "jobs", "jobdesc_eng_fullstack.json");
+
   return JSON.parse(readFileSync(jobPath, "utf-8"));
 };
 
@@ -68,11 +70,7 @@ describe("matchService", () => {
     const logger = createLogger();
 
     const { summary } = await createMatch({
-      payload: {
-        job: jobFixture,
-        resumeMarkdown: sampleResume,
-        candidate: { name: "João Santos" },
-      },
+      payload: { job: jobFixture, resumeMarkdown: sampleResume },
       logger,
     });
 
@@ -82,7 +80,6 @@ describe("matchService", () => {
 
     const report = getMatchReport(summary.id);
     assert.ok(report);
-    assert.equal(report?.candidateName, "João Santos");
     assert.ok(report?.matchedSkills.length);
     assert.ok(logger.warn.calls.length > 0);
   });
@@ -91,30 +88,21 @@ describe("matchService", () => {
     const logger = createLogger();
 
     const first = await createMatch({
-      payload: {
-        job: jobFixture,
-        resumeMarkdown: sampleResume,
-        candidate: { id: "candidate-1", name: "João Santos" },
-      },
+      payload: { job: jobFixture, resumeMarkdown: sampleResume },
       logger,
     });
 
     await new Promise((resolve) => setTimeout(resolve, 10));
 
     const second = await createMatch({
-      payload: {
-        job: jobFixture,
-        resumeMarkdown: sampleResume,
-        candidate: { id: "candidate-2", name: "Maria Silva" },
-      },
+      payload: { job: jobFixture, resumeMarkdown: sampleResume },
       logger,
     });
 
     const summaries = listMatchSummaries();
-    assert.deepEqual(
-      summaries.map((item) => item.id),
-      [second.summary.id, first.summary.id]
-    );
+    assert.equal(summaries.length, 2);
+    assert.equal(summaries[0].id, second.summary.id);
+    assert.equal(summaries[1].id, first.summary.id);
   });
 
   it("uses injected analyzer results when available", async () => {
