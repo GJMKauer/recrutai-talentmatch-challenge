@@ -331,5 +331,5 @@ Estrutura de Pastas (esperada)
 
 
 ## Exemplo da aplicação sendo executada localmente
-![Vídeo de demonstração da aplicação](https://github.com/GJMKauer/recrutai-talentmatch-challenge/raw/refs/heads/feat/tech-challenge/assets/demo_video.mp4)
+https://github.com/user-attachments/assets/ed43a423-3c22-4751-ba80-c89cc4c8cc9a
 > Obs: é possível que, em testes com o mesmo CV, a IA atribua uma nota de score diferente para cada execução devido ao prompt não estar refinado o suficiente. No entanto, a avaliação geral se mantém muito próxima.
